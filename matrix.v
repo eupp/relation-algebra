@@ -257,7 +257,7 @@ End m.
    proofs, notably for Kleene star. *)
 
 Section bsl.
-Context `{L: laws} `{Hl: BSL ≪ l} {u: ob X}.
+Context `{L: laws} `{Hl: BSL+DOT+ONE ≪ l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
 
@@ -323,18 +323,18 @@ Proof.
 Qed.
 
 (** packing everything, we get a [BSL]-monoid structure *)
-Local Instance mx_bsl_laws: laws BSL (mx_ops X u).
+Local Instance mx_bsl_laws: laws (BSL+DOT+ONE) (mx_ops X u).
 Proof. 
   constructor; try discriminate; repeat right. 
   intros. apply lower_lattice_laws.
-  exact mx_dotA.
-  exact mx_dot1x. 
-  exact mx_dotx1. 
-  exact mx_dot_leq.
-  exact mx_dotplsx_.
-  exact mx_dotxpls_.
-  exact mx_dot0x_.
-  exact mx_dotx0_.
+  intros. apply mx_dotA.
+  intros. apply mx_dot1x. 
+  intros. apply mx_dotx1. 
+  intros. apply mx_dot_leq.
+  intros. apply mx_dotplsx_.
+  intros. apply mx_dotxpls_.
+  intros. apply mx_dot0x_.
+  intros. apply mx_dotx0_.
 Qed.
 
 (** ** properties of block matrix multiplication *)
@@ -393,8 +393,15 @@ Canonical Structure lset_ops A := lattice.mk_ops (list A)
   (fun h k => forall a, List.In a h <-> List.In a k)
   (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
 
-Lemma mx_cnvdot_ n m p (M: mx n m) (N: mx m p): (M⋅N)° ≦ N°⋅M°.
-Proof. intros i j. setoid_rewrite cnvsum. now setoid_rewrite cnvdot. Qed.
+Lemma mx_cnvdot_ `{DOT ≪ l} n m p (M: mx n m) (N: mx m p): (M⋅N)° ≦ N°⋅M°. 
+Proof. intros i j. setoid_rewrite cnvsum. now setoid_rewrite cnvdot. Qed. 
+
+Lemma mx_cnv1_ `{ONE ≪ l} n : (1 : mx n n)° ≡ 1.
+Proof. 
+  intros i j. simpl. unfold mx_cnv, mx_one, ofbool. 
+  rewrite eqb_sym; simpl. case (eqb_ord i j). 
+  apply cnv1. apply cnv0.
+Qed.
 
 Lemma mx_cnv_invol n m (M: mx n m): M°° ≡ M.
 Proof. intros i j. apply cnv_invol. Qed.
@@ -402,7 +409,7 @@ Proof. intros i j. apply cnv_invol. Qed.
 Lemma mx_cnv_leq n m: Proper (leq ==> leq) (mx_cnv X u n m).
 Proof. intros ? ? H i j. apply cnv_leq, H. Qed.
 
-Lemma mx_cnv_ext n m (M: mx n m): M ≦ M⋅M°⋅M.
+Lemma mx_cnv_ext `{DOT ≪ l} n m (M: mx n m): M ≦ M⋅M°⋅M.
 Proof. 
   intros i j. simpl. unfold mx_dot, mx_cnv. setoid_rewrite dotsumx. 
   rewrite <- (leq_xsup _ _ i) by apply in_seq. 
@@ -550,9 +557,9 @@ End ka.
    
    We express the latter constraint using the following definition *)
 
-Definition mx_level l := (if has_div l then BDL+l else BSL+l)%level.
+Definition mx_level l := (if has_div l then BDL+DOT+ONE+l else BSL+DOT+ONE+l)%level.
 
-Lemma mx_div_level l : DIV ≪ l -> mx_level l ≪ l -> BDL+DIV ≪ l.
+Lemma mx_div_level l : DIV ≪ l -> mx_level l ≪ l -> BDL+DOT+ONE+DIV ≪ l.
 Proof.
   rewrite 3lower_spec. unfold mx_level. simpl. 
   case (has_div l). simpl. tauto. intuition discriminate. 
@@ -569,18 +576,19 @@ Local Hint Extern 0 (_ ≪ _) => solve_lower': typeclass_instances.
 
 Instance mx_laws `{L: laws} `{Hl: mx_level l ≪ l} u: laws l (mx_ops X u) |1.
 Proof.
-  assert (Hl': BSL ≪ l). revert Hl. unfold mx_level. case has_div; intro; solve_lower.  
+  assert (Hl': BSL+DOT+ONE ≪ l). revert Hl. unfold mx_level. case has_div; intro; solve_lower.  
   constructor; repeat right. 
   intros. apply pw_laws.
-  exact mx_dotA.
-  exact mx_dot1x. 
-  exact mx_dotx1. 
-  exact mx_dot_leq.
-  exact mx_dotplsx_.
-  exact mx_dotxpls_.
-  exact mx_dot0x_.
-  exact mx_dotx0_.
-  intro. apply mx_cnvdot_. 
+  intros. apply mx_dotA.
+  intros. apply mx_dot1x. 
+  intros. apply mx_dotx1. 
+  intros. apply mx_dot_leq.
+  intros. apply mx_dotplsx_.
+  intros. apply mx_dotxpls_.
+  intros. apply mx_dot0x_.
+  intros. apply mx_dotx0_.
+  intro. apply mx_cnvdot_.
+  intro. eapply mx_cnv1_. 
   intro. apply mx_cnv_invol.
   intro. apply mx_cnv_leq.
   apply mx_cnv_ext.
@@ -594,11 +602,11 @@ Proof.
   apply (lower_mergex _ _ _ Hl'') in Hl'. clear Hl Hl''.
   rewrite capsupx. setoid_rewrite capxsup. setoid_rewrite dotxsum. 
   apply sup_leq; trivial. intro i'. rewrite <- (leq_xsup _ _ i) by apply in_seq. apply capdotx.
-  intro Hl''. pose proof (mx_div_level _ Hl'' Hl). clear Hl Hl' Hl''. 
+  intro Hl''. pose proof (mx_div_level _ _ Hl). clear Hl Hl' Hl''. 
    intros. simpl. unfold mx_ldv, mx_dot. 
     setoid_rewrite sup_spec. setoid_rewrite inf_spec. setoid_rewrite ldv_spec. 
     clear. split; auto using in_seq. 
-  intro Hl''. pose proof (mx_div_level _ Hl'' Hl). clear Hl Hl' Hl''. 
+  intro Hl''. pose proof (mx_div_level _ _ Hl). clear Hl Hl' Hl''. 
    intros. simpl. unfold mx_rdv, mx_dot. 
     setoid_rewrite sup_spec. setoid_rewrite inf_spec. setoid_rewrite rdv_spec. 
     clear. split; auto using in_seq. 

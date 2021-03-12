@@ -19,6 +19,8 @@ Record level := mk_level {
   has_bot: bool;                (** empty relation *)
   has_cap: bool;                (** set theoretic intersection *)
   has_top: bool;                (** full relation *)
+  has_dot: bool;                (** composition *)
+  has_one: bool;                (** unit *)
   has_str: bool;                (** reflexive transitive closure *)
   has_cnv: bool;                (** converse, or transpose *)
   has_neg: bool;                (** Boolean negation *)
@@ -34,6 +36,8 @@ Definition dual l := mk_level
   (has_top l)
   (has_cup l)
   (has_bot l)
+  (has_dot l)
+  (has_one l)
   (has_str l)
   (has_cnv l)
   (has_neg l)
@@ -44,10 +48,11 @@ Definition dual l := mk_level
 (** [lower k k'], or [k ≪ k'], denotes the fact that there are less 
    operations/axioms at level [k] than at level [k'] *)
 Class lower (k k': level) := mk_lower:
-  let 'mk_level a  b  c  d  e  f  g  h  := k in
-  let 'mk_level a' b' c' d' e' f' g' h' := k' in
+  let 'mk_level a  b  c  d  e  f  g  h  i  j  := k in
+  let 'mk_level a' b' c' d' e' f' g' h' i' j' := k' in
   is_true (a<<<a'&&& b<<<b' &&& c<<<c' &&& d<<<d' 
-           &&& e<<<e' &&& f<<<f' &&& g<<<g' &&& h <<< h').
+           &&& e<<<e' &&& f<<<f' &&& g<<<g' &&& h <<< h'
+           &&& i<<<i' &&& j<<<j').
 (** Notation ≪ : \ll (company coq) or MUCH LESS-THAN (was '<<') *)
 
 Declare Scope ra_scope.
@@ -62,6 +67,8 @@ Lemma lower_spec h k: h ≪ k <->
   (has_bot h -> has_bot k) /\
   (has_cap h -> has_cap k) /\
   (has_top h -> has_top k) /\
+  (has_dot h -> has_dot k) /\
+  (has_one h -> has_one k) /\
   (has_str h -> has_str k) /\
   (has_cnv h -> has_cnv k) /\
   (has_neg h -> has_neg k) /\
@@ -86,6 +93,8 @@ Definition merge h k := mk_level
   (has_bot h ||| has_bot k)
   (has_cap h ||| has_cap k)
   (has_top h ||| has_top k)
+  (has_dot h ||| has_dot k)
+  (has_one h ||| has_one k)
   (has_str h ||| has_str k)
   (has_cnv h ||| has_cnv k)
   (has_neg h ||| has_neg k)
@@ -149,15 +158,17 @@ Section levels.
 Notation "1" := true.
 Notation "0" := false.
 (** atoms *)
-Definition MIN := mk_level 0 0 0 0 0 0 0 0.
-Definition CUP := mk_level 1 0 0 0 0 0 0 0.
-Definition BOT := mk_level 0 1 0 0 0 0 0 0.
-Definition CAP := mk_level 0 0 1 0 0 0 0 0.
-Definition TOP := mk_level 0 0 0 1 0 0 0 0.
-Definition STR := mk_level 0 0 0 0 1 0 0 0.
-Definition CNV := mk_level 0 0 0 0 0 1 0 0.
-Definition NEG := mk_level 0 0 0 0 0 0 1 0.
-Definition DIV := mk_level 0 0 0 0 0 0 0 1.
+Definition MIN := mk_level 0 0 0 0 0 0 0 0 0 0.
+Definition CUP := mk_level 1 0 0 0 0 0 0 0 0 0.
+Definition BOT := mk_level 0 1 0 0 0 0 0 0 0 0.
+Definition CAP := mk_level 0 0 1 0 0 0 0 0 0 0.
+Definition TOP := mk_level 0 0 0 1 0 0 0 0 0 0.
+Definition DOT := mk_level 0 0 0 0 1 0 0 0 0 0.
+Definition ONE := mk_level 0 0 0 0 0 1 0 0 0 0.
+Definition STR := mk_level 0 0 0 0 0 0 1 0 0 0.
+Definition CNV := mk_level 0 0 0 0 0 0 0 1 0 0.
+Definition NEG := mk_level 0 0 0 0 0 0 0 0 1 0.
+Definition DIV := mk_level 0 0 0 0 0 0 0 0 0 1.
 Local Open Scope level_scope.
 (** points of particular interest (i.e., corresponding to standard
     mathematical structures) *)
@@ -166,8 +177,8 @@ Definition DL  := Eval compute in CUP+CAP.
 Definition BSL := Eval compute in SL+BOT.
 Definition BDL := Eval compute in DL+BOT+TOP.
 Definition BL  := Eval compute in BDL+NEG.
-Definition KA  := Eval compute in SL+STR.
-Definition AA  := Eval compute in DL+STR.
+Definition KA  := Eval compute in SL+DOT+ONE+STR.
+Definition AA  := Eval compute in DL+DOT+ONE+STR.
 Definition AL  := Eval compute in CAP+CNV.
 Definition DAL := Eval compute in DL+CNV.
 Definition BKA := Eval compute in KA+BOT.

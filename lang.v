@@ -34,7 +34,7 @@ Canonical Structure lang_lattice_ops :=
   lattice.mk_ops lang leq weq cup cap neg bot top.
 
 Global Instance lang_lattice_laws: 
-  lattice.laws (BDL+STR+DIV) lang_lattice_ops := lower_lattice_laws (H:=pw_laws _). 
+  lattice.laws (BDL+DOT+ONE+STR+DIV) lang_lattice_ops := lower_lattice_laws (H:=pw_laws _). 
 
 (** * Languages a residuated Kleene lattice *)
 
@@ -104,7 +104,7 @@ Qed.
 (** languages form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
    satisfy the law [x ≦x⋅x°⋅x]) *)
-Global Instance lang_laws: laws (BDL+STR+DIV) lang_ops.
+Global Instance lang_laws: laws (BDL+DOT+ONE+STR+DIV) lang_ops.
 Proof.
   constructor; (try (intro; discriminate)); (try now left); repeat right; intros. 
    apply lower_lattice_laws.

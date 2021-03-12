@@ -39,7 +39,7 @@ Qed.
 (* Instance mm_negb l: morphism l bool_lops (dual_ops bool_ops) negb. *)
 
 (** we get most lattice laws by the faithful embedding into [Prop]  *)
-Instance bool_lattice_laws: lattice.laws (BL+STR+CNV+DIV) bool_lattice_ops.
+Instance bool_lattice_laws: lattice.laws (BL+DOT+ONE+STR+CNV+DIV) bool_lattice_ops.
 Proof. 
   assert(H: lattice.laws BDL bool_lattice_ops).
    apply (laws_of_injective_morphism is_true mm_bool_Prop).
@@ -92,7 +92,7 @@ Canonical Structure bool_ops: monoid.ops := {|
 Notation bool' := (bool_ops bool_tt bool_tt).
 
 (** we actually have all laws on [bool] *)
-Instance bool_laws: laws (BL+STR+CNV+DIV) bool_ops.
+Instance bool_laws: laws (BL+DOT+ONE+STR+CNV+DIV) bool_ops.
 Proof.
   constructor; (try now left);repeat right; intros.
    apply bool_lattice_laws.
@@ -117,7 +117,7 @@ Implicit Types a b c: bool.
 Context {X: ops} {l} {L: laws l X} {n: ob X}.
 Notation ofbool := (@ofbool X n).
 
-Lemma andb_dot `{BOT ≪ l} a b: ofbool (a&&b) ≡ ofbool a ⋅ ofbool b.
+Lemma andb_dot `{DOT+ONE+BOT ≪ l} a b: ofbool (a&&b) ≡ ofbool a ⋅ ofbool b.
 Proof. 
   symmetry. case a. apply dot1x. 
   apply antisym. now apply weq_leq, dot0x. apply leq_bx. 
@@ -129,7 +129,7 @@ Proof. symmetry. case a; simpl. case b; simpl; lattice. lattice. Qed.
 Global Instance ofbool_leq `{BOT ≪ l}: Proper (leq ==> leq) ofbool.
 Proof. intros [|] b E; simpl. now rewrite E. apply leq_bx. Qed.
 
-Lemma dot_ofboolx `{BOT ≪ l} b (x: X n n): ofbool b⋅x ≡ x⋅ofbool b.
+Lemma dot_ofboolx `{DOT+ONE+BOT ≪ l} b (x: X n n): ofbool b⋅x ≡ x⋅ofbool b.
 Proof. case b; simpl. now rewrite dot1x, dotx1. now rewrite dot0x, dotx0. Qed.
 
 End ofbool.

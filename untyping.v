@@ -173,13 +173,13 @@ Proof. rewrite <-clean_level. now intros ->. Qed.
 Lemma e_pls_weq l n m x y: `{CUP + e_level x + e_level y ≪ l} -> @e_pls' n m x y ==_[l] x+y.
 Proof. destruct_tests; intros; lattice. Qed.
 
-Lemma e_dot_weq l n m p x y: e_level x + e_level y ≪ l -> @e_dot' n m p x y ==_[l] x⋅y.
+Lemma e_dot_weq l n m p x y: DOT + e_level x + e_level y ≪ l -> @e_dot' n m p x y ==_[l] x⋅y.
 Proof. destruct_tests; symmetry. apply dot0x. apply dotx0. Qed.
 
-Lemma e_itr_weq l n x: STR + e_level x ≪ l -> @e_itr' n x ==_[l] x^+.
+Lemma e_itr_weq l n x: DOT + ONE + STR + e_level x ≪ l -> @e_itr' n x ==_[l] x^+.
 Proof. destruct_tests. intros. now rewrite itr0. Qed.
 
-Lemma e_str_weq l n x: STR + e_level x ≪ l -> @e_str' n x ==_[l] x^*.
+Lemma e_str_weq l n x: DOT + ONE + STR + e_level x ≪ l -> @e_str' n x ==_[l] x^*.
 Proof. destruct_tests. intros. now rewrite str0. Qed.
 
 Lemma e_cnv_weq l n m x: CNV + e_level x ≪ l -> @e_cnv' n m x ==_[l] x°.
@@ -285,6 +285,8 @@ Proof.
    right. now rewrite dotxpls.
 
    right. apply cnvdot_.
+
+   intros; apply cnv1. 
 
    intros; apply cnv_invol.
    
@@ -592,6 +594,7 @@ Proof.
   exists_eval. apply weq_leq. apply dotplsx.
   exists_eval. apply weq_leq. apply dotxpls.
   exists_eval. apply weq_leq. apply cnvdot.
+  exists_eval; apply cnv1. 
   exists_eval; apply cnv_invol.
   exists_eval. apply cnv_leq; assumption.
   exists_eval. apply cnv_ext.
@@ -670,7 +673,8 @@ Proof.
    now rewrite (clean_erase l l), Hy. 
   set (l' :=                    (* l \ BOT *)
     mk_level (has_cup l) false (has_cap l) (has_top l) 
-             (has_str l) (has_cnv l) (has_neg l) (has_div l)).
+             (has_dot l) (has_one l) (has_str l) 
+             (has_cnv l) (has_neg l) (has_div l)).
   assert (L: l' ≪ l). rewrite lower_spec. intuition discriminate. 
   assert (L': l ≪ BOT+l'). rewrite lower_spec. simpl. intuition. 
   assert (G: clean x <==_[l'] clean y). 

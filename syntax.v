@@ -61,18 +61,18 @@ Fixpoint e_level n m (x: expr n m): level :=
   match x with
     | e_zer _ _ => BOT
     | e_top _ _ => TOP
-    | e_one _ => MIN
+    | e_one _ => ONE
     | e_pls _ _ x y => CUP + e_level x + e_level y
     | e_cap _ _ x y => CAP + e_level x + e_level y
     | e_neg _ _ x => BL + e_level x 
       (* negation is ill-defined without the other Boolean operations, 
          whence the [BL] rather than [NEG] *)
-    | e_dot _ _ _ x y => e_level x + e_level y
-    | e_itr _ x => STR + e_level x
-    | e_str _ x => STR + e_level x
+    | e_dot _ _ _ x y => DOT + e_level x + e_level y
+    | e_itr _ x => DOT+ONE+STR + e_level x
+    | e_str _ x => DOT+ONE+STR + e_level x
     | e_cnv _ _ x => CNV + e_level x
     | e_ldv _ _ _ x y 
-    | e_rdv _ _ _ x y => DIV + e_level x + e_level y
+    | e_rdv _ _ _ x y => DOT+DIV + e_level x + e_level y
     | e_var a => MIN
   end%level.
 
@@ -183,6 +183,7 @@ Proof.
    now rewrite dot0x.
    now rewrite dotx0.
    apply cnvdot_.
+   apply cnv1.
    apply cnv_invol.
    apply cnv_leq. now refine (H0 _ _ _ _).
    apply cnv_ext.

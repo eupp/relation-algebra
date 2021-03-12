@@ -29,7 +29,7 @@ Canonical Structure hrel_lattice_ops n m :=
   lattice.mk_ops (hrel n m) leq weq cup cap neg bot top.
 
 Global Instance hrel_lattice_laws n m: 
-  lattice.laws (BDL+STR+CNV+DIV) (hrel_lattice_ops n m) := pw_laws _. 
+  lattice.laws (BDL+DOT+ONE+STR+CNV+DIV) (hrel_lattice_ops n m) := pw_laws _. 
 
 (** * Relations as a residuated Kleene allegory *)
 
@@ -77,7 +77,7 @@ Canonical Structure hrel_monoid_ops :=
   monoid.mk_ops Type@{U} hrel_lattice_ops hrel_dot (fun n => @eq n) hrel_itr hrel_str hrel_cnv hrel_ldv hrel_rdv.
 
 (** binary relations form a residuated Kleene allegory *)
-Instance hrel_monoid_laws: monoid.laws (BDL+STR+CNV+DIV) hrel_monoid_ops.
+Instance hrel_monoid_laws: monoid.laws (BDL+DOT+ONE+STR+CNV+DIV) hrel_monoid_ops.
 Proof.
   assert (dot_leq: forall n m p : Type@{U},
    Proper (leq ==> leq ==> leq) (hrel_dot n m p)).

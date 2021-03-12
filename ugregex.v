@@ -86,7 +86,7 @@ Proof.
    discriminate. 
    discriminate.
    reflexivity. 
-   intros ? [a|]; simpl; intuition. 
+   intros ? ? [a|]; simpl; intuition.
    reflexivity. 
    intros _ ? x. rewrite str_itr. simpl (lang _). apply cup_weq. 2: reflexivity. 
    intros [|]; simpl. intuition. tauto. 

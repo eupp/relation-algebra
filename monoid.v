@@ -106,37 +106,37 @@ Unset Strict Implicit.
 Class laws (l: level) (X: ops) := {
   lattice_laws:>       forall n m, lattice.laws l (X n m);
   (** po-monoid laws *)
-  dotA:                forall n m p q (x: X n m) y (z: X p q), x⋅(y⋅z) ≡ (x⋅y)⋅z;
-  dot1x:               forall n m (x: X n m), 1⋅x ≡ x;
-  dotx1_:              CNV ≪ l \/ forall n m (x: X m n), x⋅1 ≡ x;
-  dot_leq_:            DIV ≪ l \/ forall n m p, Proper (leq ==> leq ==> leq) (dot n m p);
+  dotA      `{DOT ≪ l}:     forall n m p q (x: X n m) y (z: X p q), x⋅(y⋅z) ≡ (x⋅y)⋅z;
+  dot1x     `{DOT+ONE ≪ l}: forall n m (x: X n m), 1⋅x ≡ x;
+  dotx1_    `{DOT+ONE ≪ l}: CNV ≪ l \/ forall n m (x: X m n), x⋅1 ≡ x;
+  dot_leq_  `{DOT ≪ l}:     DIV ≪ l \/ forall n m p, Proper (leq ==> leq ==> leq) (dot n m p);
   (** slo-monoid laws (distribution of ⋅ over + and 0) *)
-  dotplsx_  `{CUP ≪ l}: DIV ≪ l \/ forall n m p (x y: X n m) (z: X m p), (x+y)⋅z ≦ x⋅z+y⋅z;
-  dotxpls_  `{CUP ≪ l}: DIV ≪ l \/ CNV ≪ l \/ forall n m p (x y: X m n) (z: X p m), z⋅(x+y) ≦ z⋅x+z⋅y;
-  dot0x_    `{BOT ≪ l}: DIV ≪ l \/ forall n m p (x: X m p), 0⋅x ≦ zer n p;
-  dotx0_    `{BOT ≪ l}: DIV ≪ l \/ CNV ≪ l \/ forall n m p (x: X p m), x⋅0 ≦ zer p n;
+  dotplsx_  `{DOT+CUP ≪ l}: DIV ≪ l \/ forall n m p (x y: X n m) (z: X m p), (x+y)⋅z ≦ x⋅z+y⋅z;
+  dotxpls_  `{DOT+CUP ≪ l}: DIV ≪ l \/ CNV ≪ l \/ forall n m p (x y: X m n) (z: X p m), z⋅(x+y) ≦ z⋅x+z⋅y;
+  dot0x_    `{DOT+BOT ≪ l}: DIV ≪ l \/ forall n m p (x: X m p), 0⋅x ≦ zer n p;
+  dotx0_    `{DOT+BOT ≪ l}: DIV ≪ l \/ CNV ≪ l \/ forall n m p (x: X p m), x⋅0 ≦ zer p n;
   (** converse laws *)
-  cnvdot_   `{CNV ≪ l}: forall n m p (x: X n m) (y: X m p), (x⋅y)° ≦ y°⋅x°;
-  cnv_invol `{CNV ≪ l}: forall n m (x: X n m), x°° ≡ x;
-  cnv_leq   `{CNV ≪ l}:>forall n m, Proper (leq ==> leq) (cnv n m);
-  cnv_ext_  `{CNV ≪ l}: CAP ≪ l \/ forall n m (x: X n m), x ≦ x⋅x°⋅x;
+  cnvdot_   `{DOT+CNV ≪ l}: forall n m p (x: X n m) (y: X m p), (x⋅y)° ≦ y°⋅x°;
+  cnv1_     `{ONE+CNV ≪ l}: DOT ≪ l \/ forall n, (one n)° ≡ 1;
+  cnv_invol `{CNV ≪ l}:     forall n m (x: X n m), x°° ≡ x;
+  cnv_leq   `{CNV ≪ l}:>    forall n m, Proper (leq ==> leq) (cnv n m);
+  cnv_ext_  `{DOT+CNV ≪ l}: CAP+ONE ≪ l \/ forall n m (x: X n m), x ≦ x⋅x°⋅x;
   (** star laws *)
-  str_refl  `{STR ≪ l}: forall n (x: X n n), 1 ≦ x^*;
-  str_cons  `{STR ≪ l}: forall n (x: X n n), x⋅x^* ≦ x^*;
-  str_ind_l `{STR ≪ l}: forall n m (x: X n n) (z: X n m), x⋅z ≦ z -> x^*⋅z ≦ z;
-  str_ind_r_`{STR ≪ l}: DIV ≪ l \/ CNV ≪ l \/ forall n m (x: X n n) (z: X m n), z⋅x ≦ z -> z⋅x^* ≦ z;
-  itr_str_l `{STR ≪ l}: forall n (x: X n n), x^+ ≡ x⋅x^*;
+  str_refl  `{DOT+ONE+STR ≪ l}: forall n (x: X n n), 1 ≦ x^*;
+  str_cons  `{DOT+ONE+STR ≪ l}: forall n (x: X n n), x⋅x^* ≦ x^*;
+  str_ind_l `{DOT+ONE+STR ≪ l}: forall n m (x: X n n) (z: X n m), x⋅z ≦ z -> x^*⋅z ≦ z;
+  str_ind_r_`{DOT+ONE+STR ≪ l}: DIV ≪ l \/ CNV ≪ l \/ forall n m (x: X n n) (z: X m n), z⋅x ≦ z -> z⋅x^* ≦ z;
+  itr_str_l `{DOT+ONE+STR ≪ l}: forall n (x: X n n), x^+ ≡ x⋅x^*;
   (** modularity law *)
-  capdotx   `{AL ≪ l}: forall n m p (x: X n m) (y: X m p) (z: X n p), (x⋅y) ∩ z ≦ x⋅(y ∩ (x°⋅z));
+  capdotx   `{DOT+AL ≪ l}: forall n m p (x: X n m) (y: X m p) (z: X n p), (x⋅y) ∩ z ≦ x⋅(y ∩ (x°⋅z));
   (** left and right residuals *)
-  ldv_spec  `{DIV ≪ l}: forall n m p (x: X n m) (y: X n p) z, z ≦ x -o y <-> x⋅z ≦ y;
-  rdv_spec  `{DIV ≪ l}: forall n m p (x: X m n) (y: X p n) z, z ≦ y o- x <-> z⋅x ≦ y
+  ldv_spec  `{DOT+DIV ≪ l}: forall n m p (x: X n m) (y: X n p) z, z ≦ x -o y <-> x⋅z ≦ y;
+  rdv_spec  `{DOT+DIV ≪ l}: forall n m p (x: X m n) (y: X p n) z, z ≦ y o- x <-> z⋅x ≦ y
 }.
-
 
 (** * Basic properties *)
 
-Instance dot_leq `{laws}: forall n m p, Proper (leq ==> leq ==> leq) (dot n m p). 
+Instance dot_leq `{laws} `{DOT ≪ l}: forall n m p, Proper (leq ==> leq ==> leq) (dot n m p). 
 Proof.
   destruct dot_leq_. 2: assumption. 
   intros n m p x x' Hx y y' Hy. 
@@ -145,7 +145,7 @@ Proof.
   reflexivity.
 Qed.
 
-Instance dot_weq `{laws} n m p: Proper (weq ==> weq ==> weq) (dot n m p) := op_leq_weq_2.
+Instance dot_weq `{laws} `{DOT ≪ l} n m p: Proper (weq ==> weq ==> weq) (dot n m p) := op_leq_weq_2.
 
 
 (** ** Basic properties of the converse operation *)
@@ -173,11 +173,15 @@ Ltac cnv_switch := first [
   rewrite <-cnv_weq_iff' |
   rewrite <-cnv_weq_iff ].
 
-Lemma cnvdot `{laws} `{CNV ≪ l} n m p (x: X n m) (y: X m p): (x⋅y)° ≡ y°⋅x°.
+Lemma cnvdot `{laws} `{DOT+CNV ≪ l} n m p (x: X n m) (y: X m p): (x⋅y)° ≡ y°⋅x°.
 Proof. apply antisym. apply cnvdot_. cnv_switch. now rewrite cnvdot_, 2cnv_invol. Qed.
 
-Lemma cnv1 `{laws} `{CNV ≪ l} n: (one n)° ≡ 1.
-Proof. rewrite <- (dot1x (1°)). cnv_switch. now rewrite cnvdot, cnv_invol, dot1x. Qed.
+Lemma cnv1 `{laws} `{ONE+CNV ≪ l} n: (one n)° ≡ 1.
+Proof. 
+  destruct cnv1_; trivial.
+  rewrite <- (dot1x (1°)). cnv_switch. 
+  now rewrite cnvdot, cnv_invol, dot1x. 
+Qed.
 
 Lemma cnvpls `{laws} `{CNV+CUP ≪ l} n m (x y: X n m): (x+y)° ≡ x°+y°.
 Proof.
@@ -190,7 +194,7 @@ Lemma cnvcap `{laws} `{AL ≪ l} n m (x y: X n m): (x ∩ y)° ≡ x° ∩ y°.
 Proof.
   apply antisym. 
   apply leq_xcap; apply cnv_leq; lattice.
-  cnv_switch. apply leq_xcap; cnv_switch; lattice.
+  cnv_switch; apply leq_xcap; cnv_switch; lattice.
 Qed.
 
 Lemma cnv0 `{laws} `{CNV+BOT ≪ l} n m: (zer n m)° ≡ 0.
@@ -209,17 +213,17 @@ Qed.
 
 (** ** Basic properties of composition *)
 
-Lemma dotx1 `{laws} n m (x: X m n): x⋅1 ≡ x.
+Lemma dotx1 `{laws} `{DOT+ONE ≪ l} n m (x: X m n): x⋅1 ≡ x.
 Proof. destruct dotx1_; trivial. cnv_switch. now rewrite cnvdot, cnv1, dot1x. Qed.
 
-Lemma dotplsx `{laws} `{CUP ≪ l} n m p (x y: X n m) (z: X m p): (x+y)⋅z ≡ x⋅z+y⋅z.
+Lemma dotplsx `{laws} `{DOT+CUP ≪ l} n m p (x y: X n m) (z: X m p): (x+y)⋅z ≡ x⋅z+y⋅z.
 Proof. 
   apply antisym. 2: apply leq_cupx; apply dot_leq; lattice. 
   destruct dotplsx_ as [Hl|E]. 2: apply E.
   rewrite <-rdv_spec. apply leq_cupx; rewrite rdv_spec; lattice.
 Qed.
 
-Lemma dotxpls `{laws} `{CUP ≪ l} n m p (x y: X m n) (z: X p m): z⋅(x+y) ≡ z⋅x+z⋅y.
+Lemma dotxpls `{laws} `{DOT+CUP ≪ l} n m p (x y: X m n) (z: X p m): z⋅(x+y) ≡ z⋅x+z⋅y.
 Proof. 
   apply antisym. 2: apply leq_cupx; apply dot_leq; lattice. 
   destruct dotxpls_ as [Hl|[Hl|E]]. 
@@ -228,14 +232,14 @@ Proof.
   apply E. 
 Qed.
   
-Lemma dot0x `{laws} `{BOT ≪ l} n m p (x: X m p): 0⋅x ≡ zer n p.
+Lemma dot0x `{laws} `{DOT+BOT ≪ l} n m p (x: X m p): 0⋅x ≡ zer n p.
 Proof.
   apply antisym. 2: apply leq_bx. 
   destruct dot0x_ as [Hl|E]. 2: apply E. 
   rewrite <-rdv_spec. apply leq_bx.
 Qed.
 
-Lemma dotx0 `{laws} `{BOT ≪ l} n m p (x: X p m): x⋅0 ≡ zer p n.
+Lemma dotx0 `{laws} `{DOT+BOT ≪ l} n m p (x: X p m): x⋅0 ≡ zer p n.
 Proof. 
   apply antisym. 2: apply leq_bx. 
   destruct dotx0_ as [Hl|[Hl|E]]. 
@@ -244,18 +248,18 @@ Proof.
   apply E.
 Qed.
 
-Lemma dotxcap `{laws} `{CAP ≪ l} n m p (x: X n m) (y z: X m p): 
+Lemma dotxcap `{laws} `{DOT+CAP ≪ l} n m p (x: X n m) (y z: X m p): 
   x ⋅ (y ∩ z) ≦ (x⋅y) ∩ (x⋅z). 
 Proof. apply leq_xcap; apply dot_leq; lattice. Qed.
 
-Lemma cnv_ext `{laws} `{CNV ≪ l} n m (x: X n m): x ≦ x⋅x°⋅x.
+Lemma cnv_ext `{laws} `{DOT+CNV ≪ l} n m (x: X n m): x ≦ x⋅x°⋅x.
 Proof. 
   destruct cnv_ext_; trivial.
   transitivity ((x⋅1) ∩ x). rewrite dotx1. lattice.
   rewrite capdotx, <-dotA. apply dot_leq; lattice.
 Qed.
 
-Lemma capxdot `{laws} `{AL ≪ l} n m p (x: X m n) (y: X p m) (z: X p n):
+Lemma capxdot `{laws} `{DOT+AL ≪ l} n m p (x: X m n) (y: X p m) (z: X p n):
   (y⋅x) ∩ z ≦ (y ∩ (z⋅x°))⋅x.
 Proof. cnv_switch. now rewrite cnvdot, 2cnvcap, 2cnvdot, capdotx. Qed.
 
@@ -265,26 +269,26 @@ Proof. cnv_switch. now rewrite cnvdot, 2cnvcap, 2cnvdot, capdotx. Qed.
 (** only those properties that are required to derive [str_ind_r] out
    of divisions, see module [factor] for other properties *)
 
-Lemma ldv_cancel `{laws} `{DIV ≪ l} n m p (x: X n m) (y: X n p): x⋅(x -o y) ≦ y.
+Lemma ldv_cancel `{laws} `{DOT+DIV ≪ l} n m p (x: X n m) (y: X n p): x⋅(x -o y) ≦ y.
 Proof. now rewrite <-ldv_spec. Qed.
 
-Lemma ldv_trans `{laws} `{DIV ≪ l} n m p q (x: X n m) (y: X n p) (z: X n q): 
+Lemma ldv_trans `{laws} `{DOT+DIV ≪ l} n m p q (x: X n m) (y: X n p) (z: X n q): 
   (x -o y)⋅(y -o z) ≦ x -o z.
 Proof. now rewrite ldv_spec, dotA, 2ldv_cancel. Qed.
 
-Lemma leq_ldv `{laws} `{DIV ≪ l} n m (x y: X n m): x ≦ y <-> 1 ≦ x -o y. 
+Lemma leq_ldv `{laws} `{DOT+ONE+DIV ≪ l} n m (x y: X n m): x ≦ y <-> 1 ≦ x -o y. 
 Proof. now rewrite ldv_spec, dotx1. Qed.
 
-Lemma ldv_xx `{laws} `{DIV ≪ l} n m (x: X n m): 1 ≦ x -o x.
+Lemma ldv_xx `{laws} `{DOT+ONE+DIV ≪ l} n m (x: X n m): 1 ≦ x -o x.
 Proof. now rewrite <-leq_ldv. Qed.
 
-Instance ldv_leq `{laws} `{DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (ldv n m p).
+Instance ldv_leq `{laws} `{DOT+DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (ldv n m p).
 Proof. intros x x' Hx y y' Hy. now rewrite ldv_spec, <-Hx, <-Hy, <-ldv_spec. Qed.
 
-Instance ldv_weq `{laws} `{DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (ldv n m p).
+Instance ldv_weq `{laws} `{DOT+DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (ldv n m p).
 Proof. simpl. setoid_rewrite weq_spec. split; apply ldv_leq; tauto. Qed.
 
-Lemma cnvldv `{laws} `{CNV+DIV ≪ l} n m p (x: X n m) (y: X n p): (x -o y)° ≡ y° o- x°.
+Lemma cnvldv `{laws} `{DOT+CNV+DIV ≪ l} n m p (x: X n m) (y: X n p): (x -o y)° ≡ y° o- x°.
 Proof.
   apply from_below. intro z. 
   cnv_switch. rewrite ldv_spec.
@@ -294,14 +298,14 @@ Qed.
 
 
 (** ** Schroeder rules  *)
-Lemma Schroeder_  `{laws} `{BL+CNV ≪ l} n m p (x : X n m) (y : X m p) (z : X n p): 
+Lemma Schroeder_  `{laws} `{BL+DOT+CNV ≪ l} n m p (x : X n m) (y : X m p) (z : X n p): 
   x°⋅!z ≦ !y -> x⋅y ≦ z.
 Proof.
   intro E. apply leq_cap_neg in E. rewrite negneg in E. 
   apply leq_cap_neg. now rewrite capdotx, capC, E, dotx0. 
 Qed.
   
-Lemma Schroeder_l `{laws} `{BL+CNV ≪ l} n m p (x : X n m) (y : X m p) (z : X n p): 
+Lemma Schroeder_l `{laws} `{BL+DOT+CNV ≪ l} n m p (x : X n m) (y : X m p) (z : X n p): 
   x⋅y ≦ z <-> x°⋅!z ≦ !y. 
 Proof.
   split. 2: apply Schroeder_. intro.
@@ -312,24 +316,24 @@ Qed.
 (** ** Basic properties of Kleene star *)
 (** (more properties in [kleene]) *)
 
-Lemma str_ext `{laws} `{STR ≪ l} n (x: X n n): x ≦ x^*.
+Lemma str_ext `{laws} `{DOT+ONE+STR ≪ l} n (x: X n n): x ≦ x^*.
 Proof. now rewrite <-str_cons, <-str_refl, dotx1. Qed.
 
-Lemma str_ind_l' `{laws} `{STR ≪ l} n m (x: X n n) (y z: X n m): y ≦ z -> x⋅z ≦ z -> x^*⋅y ≦ z.
+Lemma str_ind_l' `{laws} `{DOT+ONE+STR ≪ l} n m (x: X n n) (y z: X n m): y ≦ z -> x⋅z ≦ z -> x^*⋅y ≦ z.
 Proof. intro E. rewrite E. apply str_ind_l. Qed.
 
-Lemma str_ind_l1 `{laws} `{STR ≪ l} n (x z: X n n): 1 ≦ z -> x⋅z ≦ z -> x^* ≦ z.
+Lemma str_ind_l1 `{laws} `{DOT+ONE+STR ≪ l} n (x z: X n n): 1 ≦ z -> x⋅z ≦ z -> x^* ≦ z.
 Proof. rewrite <-(dotx1 (x^*)). apply str_ind_l'. Qed.
 
-Instance str_leq `{laws} `{STR ≪ l} n: Proper (leq ==> leq) (str n).
+Instance str_leq `{laws} `{DOT+ONE+STR ≪ l} n: Proper (leq ==> leq) (str n).
 Proof.
   intros x y E. apply str_ind_l1. apply str_refl. 
   rewrite E. apply str_cons.
 Qed.
 
-Instance str_weq `{laws} `{STR ≪ l} n: Proper (weq ==> weq) (str n) := op_leq_weq_1.
+Instance str_weq `{laws} `{DOT+ONE+STR ≪ l} n: Proper (weq ==> weq) (str n) := op_leq_weq_1.
 
-Lemma str_snoc `{laws} `{STR ≪ l} n (x: X n n): x^*⋅x ≦ x^*.
+Lemma str_snoc `{laws} `{DOT+ONE+STR ≪ l} n (x: X n n): x^*⋅x ≦ x^*.
 Proof. apply str_ind_l'. apply str_ext. apply str_cons. Qed.
 
 Lemma str_unfold_l `{laws} `{KA ≪ l} n (x: X n n): x^* ≡ 1+x⋅x^*.
@@ -343,16 +347,16 @@ Qed.
 Lemma str_itr `{laws} `{KA ≪ l} n (x: X n n): x^* ≡ 1+x^+.
 Proof. rewrite itr_str_l. apply str_unfold_l. Qed.
 
-Lemma cnvstr_ `{laws} `{CNV+STR ≪ l} n (x: X n n): x^*° ≦ x°^*.
+Lemma cnvstr_ `{laws} `{DOT+ONE+STR+CNV ≪ l} n (x: X n n): x^*° ≦ x°^*.
 Proof.
   cnv_switch. apply str_ind_l1. now rewrite <-str_refl, cnv1.  
   cnv_switch. rewrite cnvdot, cnv_invol. apply str_snoc. 
 Qed.
 
-Lemma str_ldv_ `{laws} `{STR+DIV ≪ l} n m (x: X m n): (x -o x)^* ≦ x -o x.
+Lemma str_ldv_ `{laws} `{DOT+ONE+STR+DIV ≪ l} n m (x: X m n): (x -o x)^* ≦ x -o x.
 Proof. apply str_ind_l1. apply ldv_xx. apply ldv_trans. Qed.
 
-Lemma str_ind_r `{laws} `{STR ≪ l} n m (x: X n n) (z: X m n): z⋅x ≦ z -> z⋅x^* ≦ z.
+Lemma str_ind_r `{laws} `{DOT+ONE+STR ≪ l} n m (x: X n n) (z: X m n): z⋅x ≦ z -> z⋅x^* ≦ z.
 Proof. 
   destruct str_ind_r_ as [Hl|[Hl|?]]. 3: auto. 
   - rewrite <-2ldv_spec. intro E. apply str_leq in E. rewrite E. apply str_ldv_.
@@ -360,14 +364,14 @@ Proof.
     apply str_ind_l; cnv_switch; now rewrite cnvdot, 2cnv_invol.
 Qed.
 
-Lemma itr_move `{laws} `{STR ≪ l} n (x: X n n): x ⋅ x^* ≡ x^* ⋅ x.
+Lemma itr_move `{laws} `{DOT+ONE+STR ≪ l} n (x: X n n): x ⋅ x^* ≡ x^* ⋅ x.
 Proof.
   apply antisym. 
    rewrite <-dot1x, (str_refl x), dotA. apply str_ind_r. now rewrite str_snoc at 1. 
    apply str_ind_l'. now rewrite <-str_refl, dotx1. now rewrite str_cons at 1.
 Qed.
 
-Lemma itr_str_r `{laws} `{STR ≪ l} n (x: X n n): x^+ ≡ x^* ⋅ x.
+Lemma itr_str_r `{laws} `{DOT+ONE+STR ≪ l} n (x: X n n): x^+ ≡ x^* ⋅ x.
 Proof. rewrite itr_str_l. apply itr_move. Qed.
 
 
@@ -378,12 +382,13 @@ Lemma lower_laws {h k} {X} {H: laws h X} {le: k ≪ h}: laws k X.
 Proof. 
   constructor; [ intros; apply lower_lattice_laws | .. ]; 
     try solve [ apply H | intro; apply H; eauto using lower_trans ].
-  right. apply dotx1. 
-  right. apply dot_leq. 
+  intro H'. right. intros. apply (lower_trans _ _ _ H') in le. apply dotx1.  
+  intro H'. right. intros. apply (lower_trans _ _ _ H') in le. apply dot_leq.  
   intro H'. right. intros. apply weq_leq. apply (lower_trans _ _ _ H') in le. apply dotplsx.
   intro H'. right. right. intros. apply weq_leq. apply (lower_trans _ _ _ H') in le. apply dotxpls.
   intro H'. right. intros. apply weq_leq. apply (lower_trans _ _ _ H') in le. apply dot0x.
   intro H'. right. right. intros. apply weq_leq. apply (lower_trans _ _ _ H') in le. apply dotx0.
+  intro H'. right. intros. apply (lower_trans _ _ _ H') in le. apply cnv1.
   intro H'. right. intros. apply (lower_trans _ _ _ H') in le. apply cnv_ext.
   intro H'. right. right. apply (lower_trans _ _ _ H') in le. apply str_ind_r.
 Qed.
@@ -423,6 +428,7 @@ Proof.
    apply weq_leq, dotx0.
    apply weq_leq, dot0x.
    apply weq_leq, cnvdot.
+   apply cnv1.
    apply cnv_invol.
    now apply cnv_leq.
    rewrite dotA. apply cnv_ext.
@@ -444,19 +450,19 @@ Proof. eapply L. apply dual_laws, H. assumption. Qed.
 Ltac dual x := apply (dualize x).
 
 (** the following are examples of the benefits of such dualities *)
-Instance rdv_leq `{laws} `{DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (rdv n m p).
+Instance rdv_leq `{laws} `{DOT+DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (rdv n m p).
 Proof. dual @ldv_leq. Qed.
 
-Instance rdv_weq `{laws} `{DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (rdv n m p).
+Instance rdv_weq `{laws} `{DOT+DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (rdv n m p).
 Proof. dual @ldv_weq. Qed.
 
-Lemma cnvrdv `{laws} `{CNV+DIV ≪ l} n m p (x: X m n) (y: X p n): (y o- x)° ≡ x° -o y°.
+Lemma cnvrdv `{laws} `{DOT+CNV+DIV ≪ l} n m p (x: X m n) (y: X p n): (y o- x)° ≡ x° -o y°.
 Proof. dual @cnvldv. Qed.
 
-Lemma dotcapx `{laws} `{CAP ≪ l} n m p (x: X m n) (y z: X p m): (y ∩ z) ⋅ x ≦ (y⋅x) ∩ (z⋅x). 
+Lemma dotcapx `{laws} `{DOT+CAP ≪ l} n m p (x: X m n) (y z: X p m): (y ∩ z) ⋅ x ≦ (y⋅x) ∩ (z⋅x). 
 Proof. dual @dotxcap. Qed.
 
-Lemma Schroeder_r `{laws} `{BL+CNV ≪ l} n m p (x : X n m) (y : X m p) (z : X n p): 
+Lemma Schroeder_r `{laws} `{BL+DOT+CNV ≪ l} n m p (x : X n m) (y : X m p) (z : X n p): 
   x⋅y ≦ z <-> !z⋅y° ≦ !x.
 Proof. dual @Schroeder_l. Qed.
 
@@ -465,8 +471,8 @@ Proof. dual @Schroeder_l. Qed.
 
 Class functor l {X Y: ops} (f': ob X -> ob Y) (f: forall {n m}, X n m -> Y (f' n) (f' m)) := {
   fn_morphism:>     forall n m, morphism l (@f n m);
-  fn_dot:           forall n m p (x: X n m) (y: X m p), f (x⋅y) ≡ f x ⋅ f y;
-  fn_one:           forall n, f (one n) ≡ 1;
+  fn_dot `{DOT ≪ l}: forall n m p (x: X n m) (y: X m p), f (x⋅y) ≡ f x ⋅ f y;
+  fn_one `{ONE ≪ l}: forall n, f (one n) ≡ 1;
   fn_itr `{STR ≪ l}: forall n (x: X n n), f (x^+) ≡ (f x)^+;
   fn_str `{STR ≪ l}: forall n (x: X n n), f (x^*) ≡ (f x)^*;
   fn_cnv `{CNV ≪ l}: forall n m (x: X n m), f (x°) ≡ (f x)°;
@@ -489,8 +495,8 @@ Lemma laws_of_faithful_functor {h l X Y} {L: laws h Y} {Hl: l ≪ h} f' f:
   assert (L' := @lower_laws _ _ _ L Hl).
   constructor; repeat right; intro_vars. 
    apply (laws_of_injective_morphism (f n m)); auto using fn_morphism.
-   rewrite <-Hweq_iff, 4fn_dot. apply dotA. 
-   rewrite <-Hweq_iff, fn_dot, fn_one. apply dot1x. 
+   intro. rewrite <-Hweq_iff, 4fn_dot. apply dotA. 
+   intro. rewrite <-Hweq_iff, fn_dot, fn_one. apply dot1x. 
    rewrite <-Hweq_iff, fn_dot, fn_one. apply dotx1. 
    repeat intro. apply Hleq. rewrite 2fn_dot. now apply dot_leq; apply Hleq_iff. 
    apply Hleq. now rewrite fn_cup, 3fn_dot, fn_cup, dotplsx. 
@@ -498,6 +504,7 @@ Lemma laws_of_faithful_functor {h l X Y} {L: laws h Y} {Hl: l ≪ h} f' f:
    apply Hleq. now rewrite fn_dot, 2fn_bot, dot0x. 
    apply Hleq. now rewrite fn_dot, 2fn_bot, dotx0.
    intro. apply Hleq. now rewrite fn_cnv, 2fn_dot, 2fn_cnv, cnvdot.
+   apply Hweq. now rewrite fn_cnv, fn_one, cnv1. 
    intro. rewrite <-Hweq_iff, 2fn_cnv. apply cnv_invol.
    repeat intro. apply Hleq. rewrite 2fn_cnv. now apply cnv_leq; apply Hleq_iff. 
    apply Hleq. rewrite 2fn_dot,fn_cnv. apply cnv_ext.

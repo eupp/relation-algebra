@@ -49,54 +49,54 @@ Require Import monoid.
     not supported in AAC_tactics. 
 *)
 
-Lemma ext_leq_2 `{laws} {n m p} (x: X n m) (y: X m p) v: x⋅y ≦ v -> 
+Lemma ext_leq_2 `{laws} `{DOT ≪ l} {n m p} (x: X n m) (y: X m p) v: x⋅y ≦ v -> 
   forall o (u: X o n), u⋅x⋅y ≦ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed.
 
-Lemma ext_leq_3 `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x⋅y⋅z ≦ v -> 
+Lemma ext_leq_3 `{laws} `{DOT ≪ l} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x⋅y⋅z ≦ v -> 
   forall o (u: X o n), u⋅x⋅y⋅z ≦ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
-Lemma ext_leq_4 `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x⋅y⋅z⋅t ≦ v -> 
+Lemma ext_leq_4 `{laws} `{DOT ≪ l} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x⋅y⋅z⋅t ≦ v -> 
   forall o (u: X o n), u⋅x⋅y⋅z⋅t ≦ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
 
-Lemma ext_weq_2 `{laws} {n m p} (x: X n m) (y: X m p) v: x⋅y ≡ v -> 
+Lemma ext_weq_2 `{laws} `{DOT ≪ l} {n m p} (x: X n m) (y: X m p) v: x⋅y ≡ v -> 
   forall o (u: X o n), u⋅x⋅y ≡ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed.
 
-Lemma ext_weq_3 `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x⋅y⋅z ≡ v -> 
+Lemma ext_weq_3 `{laws} `{DOT ≪ l} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x⋅y⋅z ≡ v -> 
   forall o (u: X o n), u⋅x⋅y⋅z ≡ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
-Lemma ext_weq_4 `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x⋅y⋅z⋅t ≡ v -> 
+Lemma ext_weq_4 `{laws} `{DOT ≪ l} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x⋅y⋅z⋅t ≡ v -> 
   forall o (u: X o n), u⋅x⋅y⋅z⋅t ≡ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
 
-Lemma ext_leq_2' `{laws} {n m p} (x: X n m) (y: X m p) v: v ≦ x⋅y -> 
+Lemma ext_leq_2' `{laws} `{DOT ≪ l} {n m p} (x: X n m) (y: X m p) v: v ≦ x⋅y -> 
   forall o (u: X o n), u⋅v ≦ u⋅x⋅y. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed.
 
-Lemma ext_leq_3' `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≦ x⋅y⋅z -> 
+Lemma ext_leq_3' `{laws} `{DOT ≪ l} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≦ x⋅y⋅z -> 
   forall o (u: X o n), u⋅v ≦ u⋅x⋅y⋅z. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
-Lemma ext_leq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≦ x⋅y⋅z⋅t -> 
+Lemma ext_leq_4' `{laws} `{DOT ≪ l} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≦ x⋅y⋅z⋅t -> 
   forall o (u: X o n), u⋅v ≦ u⋅x⋅y⋅z⋅t. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
 
-Lemma ext_weq_2' `{laws} {n m p} (x: X n m) (y: X m p) v: v ≡ x⋅y -> 
+Lemma ext_weq_2' `{laws} `{DOT ≪ l} {n m p} (x: X n m) (y: X m p) v: v ≡ x⋅y -> 
   forall o (u: X o n), u⋅v ≡ u⋅x⋅y. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed.
 
-Lemma ext_weq_3' `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≡ x⋅y⋅z -> 
+Lemma ext_weq_3' `{laws} `{DOT ≪ l} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≡ x⋅y⋅z -> 
   forall o (u: X o n), u⋅v ≡ u⋅x⋅y⋅z. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
-Lemma ext_weq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≡ x⋅y⋅z⋅t -> 
+Lemma ext_weq_4' `{laws} `{DOT ≪ l} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≡ x⋅y⋅z⋅t -> 
   forall o (u: X o n), u⋅v ≡ u⋅x⋅y⋅z⋅t. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 

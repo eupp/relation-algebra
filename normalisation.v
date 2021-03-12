@@ -191,7 +191,7 @@ Fixpoint dot_r m p (y: expr m p): forall n, expr n m -> expr n p :=
 Definition dot' n m p (x: expr n m) (y: expr m p) := dot_r y x.
 
 Lemma dot_l_level n m p (x: expr n m) (y: expr m p): 
-  e_level (dot_l x y) ≪ e_level x + e_level y.
+  e_level (dot_l x y) ≪ DOT + e_level x + e_level y.
 Proof.
   revert p y. 
   induction x; intros q z; simpl dot_l; case_distribute; simpl e_level; 
@@ -199,7 +199,7 @@ Proof.
 Qed.
 
 Lemma dot_r_level n m p (x: expr n m) (y: expr m p): 
-  e_level (dot_r y x) ≪ e_level x + e_level y.
+  e_level (dot_r y x) ≪ DOT + e_level x + e_level y.
 Proof.
   revert n x. 
   induction y; intros q z; simpl dot_r; case_distribute; simpl e_level; 
@@ -207,20 +207,20 @@ Proof.
 Qed.
 
 Lemma dot'_level n m p (x: expr n m) (y: expr m p): 
-  e_level (dot' x y) ≪ e_level x + e_level y.
+  e_level (dot' x y) ≪ DOT + e_level x + e_level y.
 Proof. apply dot_r_level. Qed.
 
-Lemma dot_l_weq l n m p (x: expr n m) (y: expr m p) {Hl: e_level x + e_level y ≪ l}: 
+Lemma dot_l_weq l n m p (x: expr n m) (y: expr m p) {Hl: DOT + e_level x + e_level y ≪ l}: 
   x⋅y ==_[l] dot_l x y.
 Proof.
   revert p y Hl. 
   induction x; intros q z Hl; simpl dot_l; case_distribute; simpl e_level in Hl; try reflexivity. 
-   apply dot0x. 
+  apply dot0x. 
    apply dot1x. 
    now rewrite dotplsx, pls'pls, <-IHx1, <-IHx2 by (rewrite ?dot_l_level; solve_lower').
 Qed.
 
-Lemma dot'dot l n m p (x: expr n m) (y: expr m p) {Hl: e_level y+e_level x ≪ l}: 
+Lemma dot'dot l n m p (x: expr n m) (y: expr m p) {Hl: DOT + e_level y + e_level x ≪ l}: 
   dot' x y ==_[l] x⋅y.
 Proof.
   symmetry. unfold dot'. revert n x Hl. 
@@ -260,7 +260,7 @@ Proof.
     rewrite ?dot'_level, ?pls'_level, ?cap'_level, ?IHx1, ?IHx2, ?IHx; solve_lower'.
 Qed.
 
-Lemma cnv'cnv l n m (x: expr n m) {Hl: CNV+e_level x ≪ l}: cnv' x ==_[l] x°.
+Lemma cnv'cnv l n m (x: expr n m) {Hl: CNV + e_level x ≪ l}: cnv' x ==_[l] x°.
 Proof.
   symmetry. induction x; simpl cnv'; simpl e_level in Hl; 
   rewrite ?dot'dot, ?e_str' by (rewrite ?cnv'_level; solve_lower').
@@ -271,7 +271,7 @@ Proof.
   rewrite cnvcap. apply cap_weq; [apply IHx1|apply IHx2]; solve_lower'.
   rewrite cnvneg. apply neg_weq, IHx. solve_lower'.
   rewrite cnvdot. apply dot_weq; [apply IHx2|apply IHx1]; solve_lower'.
-  rewrite cnvitr. apply itr_weq, IHx. solve_lower'.
+  rewrite cnvitr. apply itr_weq, IHx. solve_lower'. 
   rewrite cnvstr. apply str_weq, IHx. solve_lower'.
   apply cnv_invol.
   rewrite cnvldv. apply rdv_weq; [apply IHx1|apply IHx2]; solve_lower'. 
@@ -301,7 +301,7 @@ Definition str' n (x: expr n n): expr n n :=
 Lemma remove_level n m (x: expr n m): e_level (remove x) ≪ e_level x.
 Proof. induction x; cbn; rewrite ?pls'_level; solve_lower'. Qed.
 
-Lemma itr'_level n (x: expr n n): e_level (itr' x) ≪ STR+e_level x.
+Lemma itr'_level n (x: expr n n): e_level (itr' x) ≪ DOT+ONE+STR+e_level x.
 Proof. 
   unfold itr'. 
   case is_zer_spec. reflexivity. 
@@ -309,7 +309,7 @@ Proof.
   cbn. now rewrite remove_level. 
 Qed.
 
-Lemma str'_level n (x: expr n n): e_level (str' x) ≪ STR+e_level x.
+Lemma str'_level n (x: expr n n): e_level (str' x) ≪ DOT+ONE+STR+e_level x.
 Proof. 
   unfold str'. 
   case is_zer_spec. reflexivity. 
@@ -318,7 +318,7 @@ Proof.
 Qed.
 
 Lemma remove_spec_dep l n m (x: expr n m):
-  forall (H: n=m) {Hl: STR+e_level x ≪ l}, (cast H eq_refl (remove x))^+ ==_[l] (cast H eq_refl x)^+.
+  forall (H: n=m) {Hl: DOT+ONE+STR+e_level x ≪ l}, (cast H eq_refl (remove x))^+ ==_[l] (cast H eq_refl x)^+.
 Proof.
   induction x; cbn; trivial; intros H Hl. 
   - subst. cbn. rewrite itr_pls_itr, pls'pls by (rewrite 2remove_level; solve_lower').
@@ -326,11 +326,11 @@ Proof.
   - now rewrite 2cast_eq, itr_invol. 
 Qed.
 
-Lemma remove_spec l n (x: expr n n) {Hl: STR+e_level x ≪ l}:
+Lemma remove_spec l n (x: expr n n) {Hl: DOT+ONE+STR+e_level x ≪ l}:
   (remove x)^+ ==_[l] x^+.
 Proof. apply (remove_spec_dep _ eq_refl). Qed.
 
-Lemma itr'itr l n (x: expr n n) {Hl: STR+e_level x ≪ l}: 
+Lemma itr'itr l n (x: expr n n) {Hl: DOT+ONE+STR+e_level x ≪ l}: 
   itr' x ==_[l] x^+.
 Proof.
   symmetry. unfold itr'. revert Hl. 
@@ -339,7 +339,7 @@ Proof.
   intros. symmetry. now apply remove_spec.
 Qed.
 
-Lemma remove_spec_dep' l n m (x: expr n m): forall (H: n=m) {Hl: STR+e_level x ≪ l}, 
+Lemma remove_spec_dep' l n m (x: expr n m): forall (H: n=m) {Hl: DOT+ONE+STR+e_level x ≪ l}, 
   (cast H eq_refl (remove x))^* ==_[l] (cast H eq_refl x)^*.
 Proof.
   induction x; cbn; trivial; intros H Hl. 
@@ -352,11 +352,11 @@ Proof.
     apply str_ind_l1. apply str_refl. now rewrite itr_str_l, str_cons, str_trans.
 Qed.
 
-Lemma remove_spec' l n (x: expr n n) {Hl: STR+e_level x ≪ l}:
+Lemma remove_spec' l n (x: expr n n) {Hl: DOT+ONE+STR+e_level x ≪ l}:
   (remove x)^* ==_[l] x^*.
 Proof. apply (remove_spec_dep' _ eq_refl). Qed.
 
-Lemma str'str l n (x: expr n n) {Hl: STR+e_level x ≪ l}: 
+Lemma str'str l n (x: expr n n) {Hl: DOT+ONE+STR+e_level x ≪ l}: 
   str' x ==_[l] x^*.
 Proof.
   symmetry. unfold str'. revert Hl. 

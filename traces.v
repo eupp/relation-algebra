@@ -80,7 +80,7 @@ Canonical Structure traces_lattice_ops :=
   lattice.mk_ops traces leq weq cup cap neg bot top.
 
 Global Instance traces_lattice_laws: 
-  lattice.laws (BDL+STR+DIV) traces_lattice_ops := lower_lattice_laws (H:=pw_laws _). 
+  lattice.laws (BDL+DOT+ONE+STR+DIV) traces_lattice_ops := lower_lattice_laws (H:=pw_laws _). 
 
 
 (** * Untyped traces a residuated Kleene lattice *)
@@ -247,11 +247,11 @@ Qed.
    (we do not have an allegory, since the converse operation does not
    satisfy the law [x ≦x⋅x°⋅x]) *)
 (* TODO: include a weak converse? *)
-Global Instance traces_monoid_laws: monoid.laws (BDL+STR+DIV) traces_monoid_ops.
+Global Instance traces_monoid_laws: monoid.laws (BDL+DOT+ONE+STR+DIV) traces_monoid_ops.
 Proof.
   constructor; try (intro; discriminate); try now left. 
    intros. apply traces_lattice_laws. 
-   exact traces_dotA.
+   intros. apply traces_dotA. 
    intros. apply traces_dot1x.
    right. intros. apply traces_dotx1.
    intros. intros w Hw. now exists O. 
@@ -455,7 +455,7 @@ Canonical Structure ttraces_lattice_ops :=
   lattice.mk_ops (ttraces n m) ttraces_leq ttraces_weq 
   ttraces_cup ttraces_cap ttraces_neg ttraces_bot ttraces_top.
 
-Global Instance ttraces_lattice_laws: lattice.laws (BDL+STR+DIV) ttraces_lattice_ops.
+Global Instance ttraces_lattice_laws: lattice.laws (BDL+DOT+ONE+STR+DIV) ttraces_lattice_ops.
 Proof.
   constructor; simpl; unfold ttraces_leq, ttraces_weq; intros.
    constructor. 
@@ -506,9 +506,9 @@ Canonical Structure ttraces_monoid_ops :=
 
 Notation ttraces' n m := (ttraces_monoid_ops n m).
 
-Global Instance ttraces_monoid_laws: monoid.laws (BDL+STR+DIV) ttraces_monoid_ops.
+Global Instance ttraces_monoid_laws: monoid.laws (BDL+DOT+ONE+STR+DIV) ttraces_monoid_ops.
 Proof.
-  assert(H: monoid.laws (DL+STR) ttraces_monoid_ops).
+  assert(H: monoid.laws (DL+DOT+ONE+STR) ttraces_monoid_ops).
    apply (laws_of_faithful_functor (f':=fun _ => tt) 
      (f:=fun n m => @proj1_sig _ _: ttraces' n m -> traces)); trivial.
     constructor; try (discriminate || reflexivity).

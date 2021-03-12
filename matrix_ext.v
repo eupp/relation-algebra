@@ -211,7 +211,7 @@ Proof. reflexivity. Qed.
 Definition mx_fun {X: lattice.ops} n m f z: mx X n m := 
   fun x y => if eqb_ord y (f x) then z else bot. 
 
-Lemma mx_dot_fun `{laws} `{BSL ≪ l} u n m f z p (M: mx (X u u) m p) i j: 
+Lemma mx_dot_fun `{laws} `{BSL+DOT ≪ l} u n m f z p (M: mx (X u u) m p) i j: 
   (mx_fun (n:=n) f z ⋅ M) i j ≡ z ⋅ M (f i) j.
 Proof.
   simpl. unfold mx_dot. apply antisym. 
@@ -222,7 +222,7 @@ Proof.
   unfold mx_fun. now rewrite eqb_refl.
 Qed.
 
-Lemma mx_dot_kfun1 `{laws} `{BSL ≪ l} u n m i p (M: mx (X u u) m p): 
+Lemma mx_dot_kfun1 `{laws} `{BSL+DOT+ONE ≪ l} u n m i p (M: mx (X u u) m p): 
   (mx_fun (n:=n) (fun _ => i) 1 ⋅ M) ≡ fun _ j => M i j.
 Proof. intros j k. rewrite mx_dot_fun. apply dot1x. Qed.
 
