@@ -81,6 +81,8 @@ let get_fun_11 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 -> for
 let get_fun_12 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3|]
 let get_fun_13 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4|]
 let get_fun_14 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 q5 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4;q5|]
+let get_fun_15 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 q5 q6 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4;q5;q6|]
+
 
 let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let open Geninterp in
@@ -125,11 +127,15 @@ end
 module Level = struct
   let path = ra_path@["level"]
   let t        = get_const path "level"
+  let lower    = get_fun_2 path "lower" 
+  let dot      = get_const path "DOT"
   let has_bot  = get_fun_1 path "has_bot"
   let has_top  = get_fun_1 path "has_top"
   let has_cup  = get_fun_1 path "has_cup"
   let has_cap  = get_fun_1 path "has_cap"
   let has_neg  = get_fun_1 path "has_neg"
+  let has_dot  = get_fun_1 path "has_dot"
+  let has_one  = get_fun_1 path "has_one"
   let has_str  = get_fun_1 path "has_str"
   let has_cnv  = get_fun_1 path "has_cnv"
   let has_div  = get_fun_1 path "has_div"
@@ -141,6 +147,8 @@ type level = {
   has_cap: bool;
   has_top: bool;
   has_neg: bool;
+  has_dot: bool;
+  has_one: bool;
   has_str: bool;
   has_cnv: bool;
   has_div: bool }
@@ -152,15 +160,20 @@ let read_level goal l =
     has_cap = convertible goal true_ (Level.has_cap l);
     has_top = convertible goal true_ (Level.has_top l);
     has_neg = convertible goal true_ (Level.has_neg l);
+    has_dot = convertible goal true_ (Level.has_dot l);
+    has_one = convertible goal true_ (Level.has_one l);
     has_str = convertible goal true_ (Level.has_str l);
     has_cnv = convertible goal true_ (Level.has_cnv l);
     has_div = convertible goal true_ (Level.has_div l) }
+
 let max_level = {
   has_cup = true;
   has_bot = true;
   has_cap = true;
   has_top = true;
   has_neg = true;
+  has_dot = true;
+  has_one = true;
   has_str = true;
   has_cnv = true;
   has_div = true }

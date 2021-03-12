@@ -8,7 +8,7 @@
 
 (** * rewriting: additional rewriting support *)
 
-Require Import monoid.
+Require Import level monoid.
 
 
 (** * rewriting modulo associativity of [dot] *)
@@ -102,6 +102,12 @@ Proof. intros E ? ?. now rewrite E, !dotA. Qed.
 
 
 Declare ML Module "mrewrite".
+
+Tactic Notation "ra_extend" tactic(k) "->" constr(h) :=
+  unshelve (ra_extend_ k ->h); [solve_lower|..].
+
+Tactic Notation "ra_extend" tactic(k) "<-" constr(h) :=
+  unshelve (ra_extend_ k <-h); [solve_lower|..].
 
 (** User-end rewriting tactics *)
 

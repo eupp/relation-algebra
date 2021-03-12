@@ -25,18 +25,18 @@ open Tacarg
 
 module Ext = struct
   let path = ra_path@["rewriting"]
-  let leq_2  = get_fun_10 path "ext_leq_2"
-  let leq_3  = get_fun_12 path "ext_leq_3"
-  let leq_4  = get_fun_14 path "ext_leq_4"
-  let weq_2  = get_fun_10 path "ext_weq_2"
-  let weq_3  = get_fun_12 path "ext_weq_3"
-  let weq_4  = get_fun_14 path "ext_weq_4"
-  let leq_2' = get_fun_10 path "ext_leq_2'"
-  let leq_3' = get_fun_12 path "ext_leq_3'"
-  let leq_4' = get_fun_14 path "ext_leq_4'"
-  let weq_2' = get_fun_10 path "ext_weq_2'"
-  let weq_3' = get_fun_12 path "ext_weq_3'"
-  let weq_4' = get_fun_14 path "ext_weq_4'"
+  let leq_2  = get_fun_11 path "ext_leq_2"
+  let leq_3  = get_fun_13 path "ext_leq_3"
+  let leq_4  = get_fun_15 path "ext_leq_4"
+  let weq_2  = get_fun_11 path "ext_weq_2"
+  let weq_3  = get_fun_13 path "ext_weq_3"
+  let weq_4  = get_fun_15 path "ext_weq_4"
+  let leq_2' = get_fun_11 path "ext_leq_2'"
+  let leq_3' = get_fun_13 path "ext_leq_3'"
+  let leq_4' = get_fun_15 path "ext_leq_4'"
+  let weq_2' = get_fun_11 path "ext_weq_2'"
+  let weq_3' = get_fun_13 path "ext_weq_3'"
+  let weq_4' = get_fun_15 path "ext_weq_4'"
 end
 
 
@@ -79,10 +79,14 @@ let extend ist k dir h =
 	      with Not_found -> error "could not find monoid laws"
 	    in
 	    let l = Evarutil.nf_evar sg l in
+            let sg,is_lower = new_evar env sg 
+              (Level.lower (Lazy.force Level.dot) l) 
+            in
+            
 	    sigma := sg;
-	    Some(l,ops,laws,ca.(3), [ca.(1),ca.(4); ca.(2),ca.(5)])
+	    Some(l,ops,laws,is_lower,ca.(3), [ca.(1),ca.(4); ca.(2),ca.(5)])
 	      
-	  | Some(l,ops,laws,r,q) -> Some(l,ops,laws,ca.(3), q@[ca.(2),ca.(5)]))
+	  | Some(l,ops,laws,is_lower,r,q) -> Some(l,ops,laws,is_lower,ca.(3), q@[ca.(2),ca.(5)]))
       | _ -> None
   in
   let rec ext env i h t =
@@ -97,10 +101,10 @@ let extend ist k dir h =
 	   | Some rel -> 
 	     let n = Array.length ca in
 	     match dots env (ca.(n-fst)), ca.(n-snd) with
-	       | Some(l,ops,laws,p,[n,x;m,y]),v -> ext_2 rel l ops laws n m p x y v h
-	       | Some(l,ops,laws,q,[n,x;m,y;p,z]),v -> ext_3 rel l ops laws n m p q x y z v h
-	       | Some(l,ops,laws,r,[n,x;m,y;p,z;q,t]),v -> ext_4 rel l ops laws n m p q r x y z t v h
-	       | Some(_,_,_,_,_),_ -> error "pattern to large, please submit a feature wish"
+	       | Some(l,ops,laws,is_lower,p,[n,x;m,y]),v -> ext_2 rel l ops laws is_lower n m p x y v h
+	       | Some(l,ops,laws,is_lower,q,[n,x;m,y;p,z]),v -> ext_3 rel l ops laws is_lower n m p q x y z v h
+	       | Some(l,ops,laws,is_lower,r,[n,x;m,y;p,z;q,t]),v -> ext_4 rel l ops laws is_lower n m p q r x y z t v h
+	       | Some(_,_,_,_,_,_),_ -> error "pattern to large, please submit a feature wish"
 	       | None,_ -> h 		(* no need for modulo A rewriting *)
 	)
       | Prod(x,s,t) -> mkLambda(x,s,ext (push x s env) (i-1) (mkApp(h,[|mkRel i|])) t)
@@ -108,12 +112,12 @@ let extend ist k dir h =
   in
   let _,t = Tacmach.New.pf_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (length !sigma t) h t in
-  (* Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma) *)
-  (ltac_apply ist k h)
-    )
+  Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
+    (ltac_apply ist k h)
+  )
 }
 
 TACTIC EXTEND ra_extend_lr
-  | [ "ra_extend" tactic(k) "->" constr(h) ] -> { extend ist k `LR h } END
+  | [ "ra_extend_" tactic(k) "->" constr(h) ] -> { extend ist k `LR h } END
 TACTIC EXTEND ra_extend_rl 
-  | [ "ra_extend" tactic(k) "<-" constr(h) ] -> { extend ist k `RL h } END
+  | [ "ra_extend_" tactic(k) "<-" constr(h) ] -> { extend ist k `RL h } END
