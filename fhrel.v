@@ -86,7 +86,7 @@ Arguments lattice.weq : simpl never.
 
 (** Obtain the lattice laws using the standard powerset construction *)
 Global Instance fhrel_lattice_laws A B: 
-  lattice.laws (BL+STR+CNV+DIV) (fhrel_lattice_ops A B) := pw_laws _.
+  lattice.laws (BL+ONE+DOT+STR+CNV+DIV) (fhrel_lattice_ops A B) := pw_laws _.
 
 Lemma fhrel_leq_dec A B (e1 e2 : {fhrel A & B}) : decidable (e1 ≦ e2).
 Proof. 
@@ -168,15 +168,15 @@ Qed.
 Definition hrel_of (A B : finType) (e : {fhrel A & B}) : hrel A B := fun x y => e x y.
 Ltac hrel_prop := do ! move => ?; rewrite /hrel_of /=; to_prop; by firstorder.
 
-Lemma hrel_of_morphism (A B : finType) : morphism (BDL+STR+CNV+DIV) (@hrel_of A B).
+Lemma hrel_of_morphism (A B : finType) : morphism (BDL+ONE+DOT+STR+CNV+DIV) (@hrel_of A B).
 Proof.
   split; try done; try hrel_prop.
   move => e1 e2 H x y. apply/eq_bool_iff. exact: H.
 Qed.
 
-Lemma hrel_of_functor : functor (BDL+STR+CNV+DIV) hrel_of.
+Lemma hrel_of_functor : functor (BDL+ONE+DOT+STR+CNV+DIV) hrel_of.
 Proof.
-  apply (@Build_functor (BDL+STR+CNV+DIV) fhrel_monoid_ops hrel_monoid_ops id hrel_of).
+  apply (@Build_functor (BDL+ONE+DOT+STR+CNV+DIV) fhrel_monoid_ops hrel_monoid_ops id hrel_of).
   all: try done. all: try hrel_prop.
   - apply: hrel_of_morphism.
   - move => _ A e x y. rewrite /hrel_of/= /fhrel_itr /hrel_itr /=. to_prop. 
@@ -184,13 +184,13 @@ Proof.
   - move => _ A e x y. exact: connect_iter.
 Qed.
 
-Lemma fhrel_monoid_laws_BDL: monoid.laws (BDL+STR+CNV+DIV) fhrel_monoid_ops.
+Lemma fhrel_monoid_laws_BDL: monoid.laws (BDL+ONE+DOT+STR+CNV+DIV) fhrel_monoid_ops.
 Proof.
   eapply (laws_of_faithful_functor hrel_of_functor) => //.
   move => A B e1 e2 H x y. apply/eq_bool_iff. exact: H.
 Qed.
 
-Global Instance hrel_monoid_laws: monoid.laws (BL+STR+CNV+DIV) fhrel_monoid_ops.
+Global Instance hrel_monoid_laws: monoid.laws (BL+ONE+DOT+STR+CNV+DIV) fhrel_monoid_ops.
 Proof.
   case fhrel_monoid_laws_BDL => *.
   split; try assumption. exact: fhrel_lattice_laws.

@@ -30,8 +30,8 @@ Proof. constructor; eauto with typeclass_instances. Qed.
 End lattice.
 
 Section monoid.
-Context `{monoid.laws} {n: ob X}.
-Global Instance aac_dotA: Associative weq (dot n n n) := (@dotA _ _ _ n n n n).
+Context `{monoid.laws} `{DOT+ONE ≪ l} {n: ob X}.
+Global Instance aac_dotA: Associative weq (dot n n n) := (@dotA _ _ _ _ n n n n).
 Global Instance aac_dotU: Unit weq (dot n n n) (one n). 
 Proof. constructor; intro. apply dot1x. apply dotx1. Qed.
 End monoid.
