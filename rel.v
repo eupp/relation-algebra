@@ -129,7 +129,7 @@ universe inconsistency when trying load ugregex_dec, kat_completeness
 (as exported by kat_tac) and rel at the same time. *)
 
 Constraint U < pw.
-Instance hrel_kat_laws: kat.laws hrel_kat_ops.
+Instance hrel_kat_laws: kat.laws BKA BL hrel_kat_ops.
 Proof.
   constructor. apply lower_laws. intro. apply (pw_laws (H:=lower_lattice_laws)).
   assert (inj_leq: forall n, Proper (leq ==> leq) (@hrel_inj n)).
@@ -143,7 +143,7 @@ Proof.
    intros [[E H']|[E H']]; split; trivial; setoid_rewrite Bool.orb_true_iff; now auto.
   intros _ i j. compute. intuition discriminate. 
   intros ? i j. compute. tauto. 
-  intros ? p q i j. split. 
+  intros ??? p q i j. split. 
    intros [E H']. setoid_rewrite Bool.andb_true_iff in H'. exists i; split; tauto. 
    intros [k [ik Hi] [kj Hk]]. subst. split; trivial. setoid_rewrite Bool.andb_true_iff; now split.
 Qed.

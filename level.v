@@ -118,6 +118,23 @@ Proof. rewrite merge_spec. tauto. Qed.
 Instance merge_lower: Proper (lower ==> lower ==> lower) merge.
 Proof. intros h k H h' k' H'. apply lower_mergex; apply lower_xmerge; auto. Qed.
 
+(** * Crossing levels *)
+
+(** crossing two levels: taking the intersection of their supported operations *)
+Definition cross h k := mk_level
+  (has_cup h &&& has_cup k)
+  (has_bot h &&& has_bot k)
+  (has_cap h &&& has_cap k)
+  (has_top h &&& has_top k)
+  (has_dot h &&& has_dot k)
+  (has_one h &&& has_one k)
+  (has_str h &&& has_str k)
+  (has_cnv h &&& has_cnv k)
+  (has_neg h &&& has_neg k)
+  (has_div h &&& has_div k).
+Infix "*" := cross: level_scope.
+Arguments cross _ _: simpl never.
+
 (** * Tactics for level constraints resolution *)
 
 (** simple but efficient tactic, this is the one used by default, we

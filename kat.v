@@ -57,19 +57,20 @@ Notation " [ p ] " := (inj p): ra_terms.
    TODO: inliner [morphism]?
    TODO: relacher les contraintes sur les niveaux
 *)
-Class laws (X: ops) := {
-  kar_BKA:> monoid.laws BKA kar;
-  tst_BL:> forall n, lattice.laws BL (tst n);
-  mor_inj: forall n, morphism BSL (@inj X n);
-  inj_top: forall n, [top] ≡ one n;
-  inj_cap: forall n (p q: tst n), [p ⊓ q] ≡ [p] ⋅ [q]
-}.
+Class laws (l: level) (l': level) (X: ops) := {
+  kar_laws:> monoid.laws l kar;
+  tst_laws:> forall n, lattice.laws l' (tst n);
 
+  mor_inj :  forall n, morphism (cross l l') (@inj X n);
+
+  inj_top `{ONE ≪ l} `{TOP ≪ l'}: forall n, [top] ≡ one n;
+  inj_cap `{DOT ≪ l} `{CAP ≪ l'}: forall n (p q: tst n), [p ⊓ q] ≡ [p] ⋅ [q]
+}.
 
 (** * Basic properties of KAT  *)
 
 Section s.
-Context `{L: laws}.
+Context {l l' : level} `{laws l l'}.
 Variable n: ob X. 
 
 Global Instance inj_leq: Proper (leq ==> leq) (@inj X n).
@@ -78,14 +79,18 @@ Proof. apply mor_inj. Qed.
 Global Instance inj_weq: Proper (weq ==> weq) (@inj X n).
 Proof. apply mor_inj. Qed.
 
-Lemma inj_bot: [bot] ≡ zer n n.
+Lemma inj_bot `{BOT ≪ l * l'}: [bot] ≡ zer n n.
 Proof. now apply mor_inj. Qed.
 
-Lemma inj_cup (p q: tst n): [p ⊔ q] ≡ [p] + [q].
+Lemma inj_cup `{CUP ≪ l * l'} (p q: tst n): [p ⊔ q] ≡ [p] + [q].
 Proof. now apply mor_inj. Qed.
 
-Lemma str_inj (p: tst n): [p]^* ≡ 1.
-Proof. apply antisym. now rewrite leq_xt, inj_top, str1. apply str_refl. Qed.
+Lemma str_inj `{DOT+ONE+STR ≪ l} `{TOP ≪ l'} (p: tst n): [p]^* ≡ 1.
+Proof. 
+  apply antisym; [|apply str_refl].
+  rewrite leq_xt with (x:=p).
+  now rewrite inj_top, str1.
+Qed.
 
 End s.
 
@@ -97,15 +102,16 @@ Definition dual (X: ops) := {|
   tst := tst;
   inj := @inj X |}. 
 
-Lemma dual_laws X (L: laws X): laws (dual X).
+Lemma dual_laws l l' X (L: laws l l' X): laws l l' (dual X).
 Proof.
   constructor; try apply L.
-  apply dual_laws, kar_BKA. 
+  apply dual_laws, kar_laws. 
   intros. simpl in *. 
   rewrite capC. apply inj_cap. 
 Qed.
 
-Lemma dualize {P: ops -> Prop} (L: forall X, laws X -> P X) {X} {H: laws X}: P (dual X).
-Proof. eapply L. now apply dual_laws. Qed.
+Lemma dualize {l l'} {P: ops -> Prop} (L: forall X, laws l l' X -> P X) 
+              {X} {H: laws l l' X}: P (dual X).
+Proof. eapply L. apply dual_laws. exact H. Qed.
 
 Ltac dual x := apply (dualize x).

@@ -85,9 +85,9 @@ End e.
 
 (** (in)equalitiy on [gregex] is defined as a smallest fixed-point, impredicatevely *)
 Definition g_leq n m (x y: gregex n m) :=
-  forall X (L: kat.laws X) fo fp fa, @eval X fo fp fa n m x ≦ @eval X fo fp fa n m y.
+  forall X (L: kat.laws BKA BL X) fo fp fa, @eval X fo fp fa n m x ≦ @eval X fo fp fa n m y.
 Definition g_weq n m (x y: gregex n m) :=
-  forall X (L: kat.laws X) fo fp fa, @eval X fo fp fa n m x ≡ @eval X fo fp fa n m y.
+  forall X (L: kat.laws BKA BL X) fo fp fa, @eval X fo fp fa n m x ≡ @eval X fo fp fa n m y.
 
 (** packing all operations using canonical structures *)
 Canonical Structure gregex_lattice_ops n m := {|
@@ -152,29 +152,33 @@ Proof.
 Qed.
 
 (** KAT laws  *)
-Global Instance gregex_kat_laws: kat.laws gregex_kat_ops.
+Global Instance gregex_kat_laws: kat.laws BKA BL gregex_kat_ops.
 Proof.
   constructor. apply gregex_monoid_laws. intro. apply lower_lattice_laws.
   constructor; try discriminate; repeat intro.
-  apply inj_leq, H, tst_BL.
-  apply inj_weq, H, tst_BL.
-  apply inj_cup.
+  apply inj_leq, H, tst_laws.
+  apply inj_weq, H, tst_laws.
+  apply inj_cup. solve_lower.
   apply inj_bot.
-  reflexivity.
+  reflexivity. 
+  reflexivity. 
   repeat intro. apply inj_cap.
 Qed.
 
 (** additional properties of the injection ([g_prd]) *)
-Definition inj_cup := @inj_cup _ gregex_kat_laws.
-Definition inj_bot := @inj_bot _ gregex_kat_laws.
-Definition inj_cap := @inj_cap _ gregex_kat_laws.
-Definition inj_top := @inj_top _ gregex_kat_laws.
-Definition inj_weq := @inj_weq _ gregex_kat_laws.
-Definition inj_leq := @inj_leq _ gregex_kat_laws.
+Definition inj_cup := @inj_cup _ _ _ gregex_kat_laws.
+Definition inj_bot := @inj_bot _ _ _ gregex_kat_laws.
+Definition inj_cap := @inj_cap _ _ _ gregex_kat_laws.
+Definition inj_top := @inj_top _ _ _ gregex_kat_laws.
+Definition inj_weq := @inj_weq _ _ _ gregex_kat_laws.
+Definition inj_leq := @inj_leq _ _ _ gregex_kat_laws.
 
 Lemma inj_sup n I J (f: I -> expr_ BL): @g_prd n (sup f J) ≡ \sup_(i\in J) g_prd (f i).
-Proof. apply f_sup_weq. apply inj_bot. apply inj_cup. Qed.
-
+Proof. 
+  apply f_sup_weq. 
+  apply inj_bot. solve_lower. 
+  apply inj_cup. solve_lower. 
+Qed.
 
 (** * Interpretation in the guarded strings model *)
 

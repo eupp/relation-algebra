@@ -35,19 +35,19 @@ Proof. ra. Qed.
 Lemma rmov_x_0 `{L: monoid.laws} `{Hl: BOT+DOT ≪ l} {n m p q} (x: X n m) (y: X p q): x;0 ≡ 0;y.
 Proof. ra. Qed.
 
-Lemma rmov_x_cap `{L: laws} {n} (x: X n n) a b:
+Lemma rmov_x_cap `{L: laws BKA BL} {n} (x: X n n) a b:
   x;[a] ≡ [a];x -> x;[b] ≡ [b];x -> x;[a ⊓ b] ≡ [a ⊓ b];x.
 Proof. hkat. Qed.
 
-Lemma rmov_x_cup `{L: laws} {n} (x: X n n) a b:
+Lemma rmov_x_cup `{L: laws BKA BL} {n} (x: X n n) a b:
   x;[a] ≡ [a];x -> x;[b] ≡ [b];x -> x;[a ⊔ b] ≡ [a ⊔ b];x.
 Proof. hkat. Qed.
 
-Lemma rmov_x_neg `{L: laws} {n} (x: X n n) a:
+Lemma rmov_x_neg `{L: laws BKA BL} {n} (x: X n n) a:
   x;[a] ≡ [a];x -> x;[!a] ≡ [!a];x.
 Proof. hkat. Qed.
 
-Lemma rmov_inj `{L: laws} {n} (a b: tst n): [a]⋅[b] ≡ [b]⋅[a].
+Lemma rmov_inj `{L: laws BKA BL} {n} (a b: tst n): [a]⋅[b] ≡ [b]⋅[a].
 Proof. kat. Qed.
 
 Ltac solve_rmov :=

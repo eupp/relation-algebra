@@ -52,25 +52,25 @@ Proof.
   apply str_ind_l'. ka. rewrite <-str_snoc at 2. rewrite Hpq at 2 3. mrewrite Hpr. ka. 
 Qed.
 
-Lemma lemma_2 `{L: laws} n b (q: X n n): 
+Lemma lemma_2 `{L: laws BKA BL} n b (q: X n n): 
   [b];q ≡ q;[b] -> [b];q^* ≡ [b];(q;[b])^*.
 Proof. hkat. Qed.
 
 
 (** ** 3.1 Deadcode elimination  *)
 
-Lemma opti_3_1_a `{L: laws} n (a: tst n) (p q: X n n): 
+Lemma opti_3_1_a `{L: laws BKA BL} n (a: tst n) (p q: X n n): 
   p ≡ p;[!a] -> p;([a];q+[!a]) ≡ p.
 Proof. hkat. Qed.
 
-Lemma opti_3_1_b `{L: laws} n (a: tst n) (p q: X n n): 
+Lemma opti_3_1_b `{L: laws BKA BL} n (a: tst n) (p q: X n n): 
   p ≡ p;[!a] -> p;([a];q)^*;[!a] ≡ p.
 Proof. hkat. Qed.
 
 
 (** ** 3.2 Common sub-expression elimination  *)
 
-Lemma opti_3_2 `{L: laws} n (a b: tst n) (p q r w: X n n):
+Lemma opti_3_2 `{L: laws BKA BL} n (a b: tst n) (p q r w: X n n):
   p ≡ p;[a] -> 
   [a];q ≡ [a];q;[b] -> 
   [b];r ≡ [b] -> 
@@ -86,7 +86,7 @@ Qed.
 
 (** ** 3.3 Copy propagation *)
 
-Lemma opti_3_3 `{L: laws} n (a b: tst n) (p q r s v w: X n n):
+Lemma opti_3_3 `{L: laws BKA BL} n (a b: tst n) (p q r s v w: X n n):
   q ≡ q;[a] -> 
   [a];r ≡ [a];r;[b] -> 
   [b];s ≡ [b] -> 
@@ -105,7 +105,7 @@ Qed.
 
 (** ** 3.4 Loop Hoisting *)
 
-Lemma opti_3_4i `{L: laws} n (a b: tst n) (p q r s u w: X n n):
+Lemma opti_3_4i `{L: laws BKA BL} n (a b: tst n) (p q r s u w: X n n):
   u;[b] ≡ u ->
   [b];u ≡ [b] ->
   [b];q ≡ q;[b] -> 
@@ -124,7 +124,7 @@ Proof.
   mrewrite <-E. mrewrite Huw. mrewrite E. hkat. 
 Qed.
 
-Lemma opti_3_4ii `{L: laws} n (a: tst n) (p q u w: X n n):
+Lemma opti_3_4ii `{L: laws BKA BL} n (a: tst n) (p q u w: X n n):
   u ≡ w;u ->
   u;w ≡ w ->
   w;p;q ≡ p;q;w ->
@@ -143,7 +143,7 @@ Qed.
 
 (** ** 3.5 Induction variable elimination *)
 
-Lemma opti_3_5 `{L: laws} n (a b c: tst n) (p q r: X n n):
+Lemma opti_3_5 `{L: laws BKA BL} n (a b c: tst n) (p q r: X n n):
   q ≡ q;[b] -> 
   [b] ≡ [b];q -> 
   [c];r ≡ [c];r;[b] -> 
@@ -165,28 +165,28 @@ Qed.
 Lemma lemma_3 `{L: monoid.laws} `{Hl: BKA ≪ l} n (u: X n n): u^* ≡ (1+u);(u;u)^*.
 Proof. ka. Qed.
 
-Lemma opti_3_8 `{L: laws} n a (p: X n n): 
+Lemma opti_3_8 `{L: laws BKA BL} n a (p: X n n): 
   ([a];p)^*;[!a] ≡ ([a];p;([a];p+[!a]))^*;[!a].
 Proof. kat. Qed.
 
 
 (** ** 3.9 Redundant loads and stores *)
 
-Lemma opti_3_9 `{L: laws} n a (p q: X n n): 
+Lemma opti_3_9 `{L: laws BKA BL} n a (p q: X n n): 
   p ≡ p;[a] -> [a];q ≡ [a] -> p;q ≡ p.
 Proof. intros Hp Hq. hkat. Qed.
 
 
 (** ** 3.10 Array bounds check elimination *)
 
-Lemma opti_3_10'i `{L: laws} n (a b: tst n) (u v p q s: X n n): 
+Lemma opti_3_10'i `{L: laws BKA BL} n (a b: tst n) (u v p q s: X n n): 
   u;[a] ≡ u -> 
   [a ⊓ b];p ≡ p;[a ⊓ b] ->
   [a];([b];p;q;v) ≡ ([b];p;q;v);[a] ->
   u;([b];p;([a ⊓ b];q+[!(a ⊓ b)];s);v)^*;[!b] ≡ u;([b];p;q;v)^*;[!b].
 Proof. hkat. Qed.
 
-Lemma opti_3_10' `{L: laws} n (a b c: tst n) (u v p q s: X n n): 
+Lemma opti_3_10' `{L: laws BKA BL} n (a b c: tst n) (u v p q s: X n n): 
   a ⊓ b ≡ c ->
   u;[a] ≡ u -> 
   [c];p ≡ p;[c] ->
@@ -197,7 +197,7 @@ Proof. hkat. Qed.
 
 (** ** 3.11 Introduction of sentinels *)
 
-Lemma opti_3_11 `{L: laws} n (a b c d: tst n) (u p q s t: X n n):
+Lemma opti_3_11 `{L: laws BKA BL} n (a b c d: tst n) (u p q s t: X n n):
   u;[c] ≡ u ->
   [c];p ≡ p;[c] ->
   [c];q ≡ q;[c] ->

@@ -253,14 +253,14 @@ Proof.
 Qed.
 Instance prog_lattice_laws: lattice.laws BKA prog_lattice_ops := lattice_laws tt tt. 
 
-Instance prog_kat_laws: kat.laws prog_kat_ops. 
+Instance prog_kat_laws: kat.laws BKA BL prog_kat_ops. 
 Proof.
   constructor; simpl; eauto with typeclass_instances. 2: tauto. 
   split; try discriminate; try (simpl; tauto).
   intros x y H. apply inj_leq. intro m. apply H.
   intros x y H. apply inj_weq. intro m. apply H.
-  intros _ x y. apply (inj_cup (X:=hrel_kat_ops)).
-  intros _ x y. apply (inj_cap (X:=hrel_kat_ops)).
+  intros _ x y. apply (inj_cup (X:=hrel_kat_ops)). solve_lower.
+  intros _ _ _ x y. apply (inj_cap (X:=hrel_kat_ops)).
 Qed.
 
 (** ** variables read by a program *)

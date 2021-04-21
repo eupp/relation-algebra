@@ -30,16 +30,15 @@ Qed.
 End j.
 
 (** we can thus refine the reification lemma provided in [kat_reification] *)
-Corollary kat_weq_dec `{L: laws} f' fs fp n m (e f: @kat_expr X f' fs n m): 
+Corollary kat_weq_dec `{L: laws BKA BL} f' fs fp n m (e f: @kat_expr X f' fs n m): 
   e_level e + e_level f ≪ BKA ->
   (let v := vars (e_pls e f) in 
     eqb_kat (gerase (to_gregex v n m e)) (gerase (to_gregex v n m f)) = Some true) -> 
   eval fp n m e ≡ eval fp n m f.
 Proof.
-  intros Hl H. apply to_gregex_weq. assumption. 
+  intros Hl H. eapply to_gregex_weq. assumption. 
   apply kat_untype_weq, eqb_kat_correct, H.
 Qed.
-
 
 
 (** * [kat] tactic, for Kleene algebra with tests *)
@@ -63,7 +62,7 @@ Qed.
       execution of the Coa KAT decision algorithm - it should never fail 
       since the equation was already checked in OCaml) *)
 
-Lemma catch_kat_weq {X} {L: laws X} n m (x y: X n m): 
+Lemma catch_kat_weq {X} {L: laws BKA BL X} n m (x y: X n m): 
   (let L:=L in x ≡ y) -> x ≡ y.
 Proof. trivial. Qed.
 
@@ -97,7 +96,7 @@ Ltac kat :=
 (* TODO: sync with conservativity once we got it *)
 Module bka_to_kat.
 Definition ops (X: monoid.ops) := mk_ops X (fun _ => bool_lattice_ops) (fun _ => ofbool). 
-Lemma laws `{monoid.laws} `{BKA ≪ l}: kat.laws (ops X).
+Lemma laws `{monoid.laws} `{BKA ≪ l}: kat.laws BKA BL (ops X).
 Proof.
   constructor. 
   apply lower_laws. 
@@ -152,26 +151,26 @@ Ltac ka :=
 
 
 (** converting various kinds of hypotheses to Hoare ones *)
-Lemma ab_to_hoare `{L: laws} {n} (b c: tst n): b ≡ c -> [b ⊓ !c ⊔ !b ⊓ c] ≦ 0.
+Lemma ab_to_hoare `{L: laws BKA BL} {n} (b c: tst n): b ≡ c -> [b ⊓ !c ⊔ !b ⊓ c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
-Lemma ab'_to_hoare `{L: laws} {n} (b c: tst n): b ≦ c -> [b ⊓ !c] ≦ 0.
+Lemma ab'_to_hoare `{L: laws BKA BL} {n} (b c: tst n): b ≦ c -> [b ⊓ !c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
 (* note: les quatre implications suivantes ne sont complètes que pour p=q *)
-Lemma bpqc_to_hoare `{L: laws} {n m} (b: tst n) (c: tst m) p q: 
+Lemma bpqc_to_hoare `{L: laws BKA BL} {n m} (b: tst n) (c: tst m) p q: 
   [b]⋅p ≦ q⋅[c] -> [b]⋅p⋅[!c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
-Lemma pbcq_to_hoare `{L: laws} {n m} (b: tst n) (c: tst m) p q: 
+Lemma pbcq_to_hoare `{L: laws BKA BL} {n m} (b: tst n) (c: tst m) p q: 
   p⋅[b] ≦ [c]⋅q -> [!c]⋅p⋅[b] ≦ 0.
 Proof. rewrite <-dotA. dual @bpqc_to_hoare. Qed.
 
-Lemma qpc_to_hoare `{L: laws} {n m} (c: tst m) (p q: X n m): 
+Lemma qpc_to_hoare `{L: laws BKA BL} {n m} (c: tst m) (p q: X n m): 
   q ≦ p⋅[c] -> q⋅[!c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
-Lemma qcp_to_hoare `{L: laws} {n m} (c: tst m) (p q: X m n):
+Lemma qcp_to_hoare `{L: laws BKA BL} {n m} (c: tst m) (p q: X m n):
   q ≦ [c]⋅p -> [!c]⋅q ≦ 0.
 Proof. dual @qpc_to_hoare. Qed.
 
@@ -179,11 +178,11 @@ Proof. dual @qpc_to_hoare. Qed.
    (note: les deux dernières sont équivalentes aux deux premières, 
           mais pas prises dans le cas complet) *)
 
-Lemma cp_c `{L: laws} {n} (c: tst n) (p: X n n): 
+Lemma cp_c `{L: laws BKA BL} {n} (c: tst n) (p: X n n): 
   [c]⋅p ≡ [c] -> p ≡ [!c]⋅p+[c].
 Proof. intro H. rewrite <-H. kat. Qed.
 
-Lemma pc_c `{L: laws} {n} (c: tst n) (p: X n n): 
+Lemma pc_c `{L: laws BKA BL} {n} (c: tst n) (p: X n n): 
   p⋅[c] ≡ [c] -> p ≡ p⋅[!c]+[c].
 Proof. dual @cp_c. Qed.
 
@@ -194,11 +193,11 @@ Proof. rewrite cup_spec. tauto. Qed.
 
 (** eliminating Hoare hypotheses ; [u] and [v] are intended to be the
    universal expressions of the appropriate type *)
-Lemma elim_hoare_hypotheses_weq `{L: laws} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
+Lemma elim_hoare_hypotheses_weq `{L: laws BKA BL} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
   z ≦ 0 -> x+u⋅z⋅v ≡ y+u⋅z⋅v -> x ≡y.
 Proof. rewrite leq_xb_iff. intro Hz. now rewrite Hz, dotx0, dot0x, 2cupxb. Qed.
 
-Lemma elim_hoare_hypotheses_leq `{L: laws} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
+Lemma elim_hoare_hypotheses_leq `{L: laws BKA BL} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
   z ≦ 0 -> x ≦ y+u⋅z⋅v -> x ≦y.
 Proof. intro Hz. now rewrite Hz, dotx0, dot0x, cupxb. Qed.
 

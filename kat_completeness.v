@@ -106,7 +106,7 @@ Qed.
 Definition g_one' n := g_prd' n (@lsyntax.e_top _).
 
 Lemma teval_one n: teval (g_one' n) ≡ 1. 
-Proof. unfold g_one'. rewrite teval_prd. apply inj_top. Qed.
+Proof. unfold g_one'. rewrite teval_prd. apply inj_top; solve_lower. Qed.
 
 (** *** letters *)
 
@@ -160,10 +160,11 @@ Lemma empty_atom_dot n a b: a<>b -> g_atom n a ⋅ g_atom n b ≡ 0.
 Proof. 
   intros. setoid_rewrite <-inj_cap.
   rewrite (empty_atom_cap H). apply inj_bot. 
+  all: solve_lower.
 Qed.
 
 Lemma idem_atom_dot n a: g_atom n a ⋅ g_atom n a ≡ g_atom n a.
-Proof. setoid_rewrite <-inj_cap. now rewrite capI. Qed.
+Proof. setoid_rewrite <-inj_cap. now rewrite capI. all: solve_lower. Qed.
 
 (** correctness of [g_dot1] *)
 Lemma geval_dot n m p (x: guard n m) (y: guard m p): teval (g_dot1 x y) ≡ geval x ⋅ geval y.
@@ -261,7 +262,9 @@ Proof.
   revert p y. destruct x as [n a|n m a e b]; destruct y as [p c|p q c f d];
     simpl fst; simpl lst; simpl geval. 
    rewrite dirac_refl. case eqb. 2: ra. ra_normalise. 
-    setoid_rewrite <-inj_cap. rewrite <-inj_top, <-inj_cup. apply inj_weq. lattice. 
+    setoid_rewrite <-inj_cap; try now solve_lower. 
+    rewrite <-inj_top, <-inj_cup; try now solve_lower. 
+    apply inj_weq. lattice. 
    case eqb_spec; intro E. subst. case eqb_spec; intro E'. subst. 
     simpl. ra_normalise. now rewrite idem_atom_dot.
     ra. 
@@ -486,19 +489,22 @@ Lemma o'o_pred: forall n (a: test), o' (o_pred n a) ≡ g_prd _ _ a
  with o'o_npred: forall n (a: test), o' (o_npred n a) ≡ g_prd _ _ (!a).
 Proof.
   destruct a.
-   symmetry. apply inj_bot. 
-   symmetry. apply inj_top.
-   setoid_rewrite inj_cup. apply cup_weq; apply o'o_pred. 
-   setoid_rewrite inj_cap. apply dot_weq; apply o'o_pred. 
+   symmetry. apply inj_bot; solve_lower.
+   symmetry. apply inj_top; solve_lower.
+   setoid_rewrite inj_cup; try now solve_lower. 
+   apply cup_weq; apply o'o_pred. 
+   setoid_rewrite inj_cap; try now solve_lower. 
+   apply dot_weq. apply o'o_pred. apply o'o_pred. 
    apply o'o_npred. 
    reflexivity. 
   destruct a.
-   symmetry. etransitivity. apply inj_weq. apply negbot. apply inj_top. 
-   symmetry. etransitivity. apply inj_weq. apply negtop. apply inj_bot. 
-   etransitivity. 2: apply inj_weq; symmetry; apply negcup. rewrite inj_cap.
+   symmetry. etransitivity. apply inj_weq. apply negbot. apply inj_top; solve_lower.
+   symmetry. etransitivity. apply inj_weq. apply negtop. apply inj_bot; solve_lower. 
+   etransitivity. 2: apply inj_weq; symmetry; apply negcup. rewrite inj_cap. 
     apply dot_weq; apply o'o_npred. 
+    1-2: solve_lower.
    etransitivity. 2: apply inj_weq; symmetry; apply negcap. rewrite inj_cup.
-    apply cup_weq; apply o'o_npred. 
+    apply cup_weq; apply o'o_npred. solve_lower.
    etransitivity. 2: apply inj_weq; symmetry; apply negneg. apply o'o_pred. 
    reflexivity. 
 Qed.

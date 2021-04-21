@@ -242,7 +242,7 @@ Definition fdset: ob fhrel_monoid_ops -> lattice.ops := pw_ops bool_lattice_ops.
 Canonical Structure fhrel_kat_ops := 
   kat.mk_ops fhrel_monoid_ops fdset (@fhrel_inj).
 
-Global Instance fhrel_kat_laws: kat.laws fhrel_kat_ops.
+Global Instance fhrel_kat_laws: kat.laws BKA BL fhrel_kat_ops.
 Proof.
   split.
   - by eapply lower_laws. 
@@ -254,8 +254,8 @@ Proof.
     + move => x y. rewrite !weq_spec. by intuition.
     + move => _ f g x y /=. by case: (_ == _); case (f x); case (g x).
     + move => _ x y /=. by rewrite andbF.
-  - move => A x y /=. by rewrite andbT.
-  - move => A p q x y /=. rewrite /dot/=.
+  - move => _ _ A x y /=. by rewrite andbT.
+  - move => _ _ A p q x y /=. rewrite /dot/=.
     apply/eq_bool_iff. to_prop. by firstorder;subst.
 Qed.
 

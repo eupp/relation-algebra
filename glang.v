@@ -53,7 +53,7 @@ Definition glang_inj (n: traces_unit) (x: expr_ops (ord pred) BL):
 Canonical Structure glang_kat_ops := kat.mk_ops _ _ glang_inj.
 
 (** This model satisfies KAT laws *)
-Global Instance glang_kat_laws: kat.laws glang_kat_ops. 
+Global Instance glang_kat_laws: kat.laws BKA BL glang_kat_ops. 
 Proof.
   constructor. apply lower_laws. intro. apply expr_laws.
   assert (inj_leq: forall n, Proper (leq ==> leq) (@glang_inj n)).
@@ -65,8 +65,8 @@ Proof.
   intros _ x y [a|]. 2: compute; tauto. simpl.
    setoid_rewrite Bool.orb_true_iff. reflexivity.
   intros _ [a|]. 2: reflexivity. simpl. intuition discriminate. 
-  intros ? [a|]. 2: reflexivity. simpl. now intuition. 
-  intros ? x y [a|]. simpl. setoid_rewrite Bool.andb_true_iff. split. 
+  intros _ ?? [a|]. 2: reflexivity. simpl. now intuition.
+  intros _ _ ? x y [a|]. simpl. setoid_rewrite Bool.andb_true_iff. split. 
    intros (Hx&Hy). repeat exists (tnil a); try split; trivial. constructor. 
    intros [[b|] Hu [[c|] Hv H]]; try elim Hu; try elim Hv.
    inversion H. intuition congruence. 
@@ -91,7 +91,7 @@ Next Obligation. intros [a|???] []. constructor. Qed.
 Canonical Structure tglang_kat_ops := kat.mk_ops _ _ tglang_inj.
 
 (* TODO: comment factoriser les deux preuves? *)
-Global Instance tglang_kat_laws: kat.laws tglang_kat_ops. 
+Global Instance tglang_kat_laws: kat.laws BKA BL tglang_kat_ops. 
 Proof.
   constructor. apply lower_laws. intro. apply expr_laws.
   assert (inj_leq: forall n, Proper (leq ==> leq) (@tglang_inj n)).
@@ -103,8 +103,8 @@ Proof.
   intros _ x y [a|]. 2: compute; tauto. simpl.
    setoid_rewrite Bool.orb_true_iff. tauto.
   intros _ [a|]. 2: reflexivity. simpl. intuition discriminate. 
-  intros ? [a|]. 2: reflexivity. simpl. now intuition. 
-  intros ? x y [a|]. simpl. setoid_rewrite Bool.andb_true_iff. split. 
+  intros _ _ ? [a|]. 2: reflexivity. simpl. now intuition. 
+  intros _ _ ? x y [a|]. simpl. setoid_rewrite Bool.andb_true_iff. split. 
    intros (Hx&Hy). repeat exists (tnil a); try split; trivial. constructor. 
    intros [[b|] Hu [[c|] Hv H]]; try elim Hu; try elim Hv.
    inversion H. intuition congruence. 

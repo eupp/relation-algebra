@@ -186,7 +186,7 @@ Qed.
    residuals and converse, for instance), we have to check that the
    expression does not use such constructions, whence the first
    hypothesis. *)
-Lemma to_gregex_eval {L: laws X} v n m e fp: e_level e ≪ BKA -> vars e ≦ v -> 
+Lemma to_gregex_eval {L: laws BKA BL X} v n m e fp: e_level e ≪ BKA -> vars e ≦ v -> 
   eval fp n m e ≡
   gregex.eval f' (fun n i => fp n (nth i v xH)) (fun i => val (fs i)) (to_gregex v n m e).
 Proof.
@@ -222,7 +222,7 @@ Qed.
    (The hypothesis that expressions do not use forbidden symbols will be easily
    checked by reflection, dynamically.) *)
 
-Corollary to_gregex_weq {L: laws X} n m e f fp: 
+Corollary to_gregex_weq {L: laws BKA BL X} n m e f fp: 
   e_level e + e_level f ≪ BKA ->
   (let v := vars (e_pls e f) in to_gregex v n m e ≡ to_gregex v n m f) -> 
   eval fp n m e ≡ eval fp n m f.
